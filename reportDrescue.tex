@@ -79,11 +79,35 @@
 
 \end{titlepage}
 
-\section*{Cose da fare}
+\section*{TODO Section}
 
-\subsubsection*{Appunti dalle richieste}
+\subsubsection*{TODO SUBSECTION}
 
 \textbf{PRIMA: descrizione anche sommaria di cosa il sistema implementato realizza}
+
+%TODO
+PROGETTO: Segnalazione, raccolta ed elaborazione dati sulle catastrofi naturali.\\
+
+STRUTTURA SISTEMA:\\
+lato utente: web app o app Android nativa (più orientato sulla seconda) da cui l’utente segnala l’avvenimento di un terremoto, eruzione vulcanica, tempesta, ecc. inviando al server nella segnalazione la sua posizione; (in questo modo senza la necessità di simulare sensori)
+lato coordinatore delle squadre di soccorso: software desktop per coordinare l’arrivo dei soccorsi, decidere quale squadra tra quelle localizzate sul territorio deve intervenire
+database per mantenere le segnalazioni
+server per fare analisi, segnalare ai coordinatori delle squadre di soccorso che è avvenuta una catastrofe\\
+
+Territorio Italiano\\
+
+LATO OPERATORE: \\
+Esempio di come abbiamo pensato la gestione delle squadre di soccorso: 
+Un operatore gestisce una zona, sa che può contattare certe squadre di soccorso perchè si sono rese disponibili/rendono servizio presso di lui. Una squadra di soccorso può fornire i propri servizi a più operatori e sono definite in termini di mezzi che hanno a disposizione (es. due volanti, tre camion dei pompieri, due ambulanze…). 
+{NOTA: in pratica, come si vede nel disegno fatto nella pagina dopo, non abbiamo un nuovo applicativo per le squadre di soccorso, sono sempre gli operatori ad occuparsene, mantenendo però le informazioni relative alle squadre di soccorso (probabilmente condivise tra alcuni operatori) al loro interno. Abbiamo visto che nella realtà le squadre di soccorso si “iscrivono” presso diverse “protezioni civili”(i nostri operatori)}\\
+
+Esempio d’uso applicativo.
+Viene segnalato un incendio da molte persone 
+Segnalazioni ritenute veritiere dall’operatore (algoritmo)
+L’operatore seleziona la squadra (a sua disposizione) migliore da inviare sul posto 
+Una volta interpellata la squadra bisogna fare in modo che tutti coloro che possono attingere a quella squadra vengano a conoscenza del fatto che quella squadra è impegnata momentaneamente, e anche quando questa completa il proprio lavoro. Quindi è necessario mantenere memorizzati le disponibilità delle varie squadre.\\
+
+
 
 \textbf{1.Processo di sviluppo adottato (modalità di divisione in itinere dei task, meeting/interazioni pianificate, modalità di revisione in itinere dei task, scelta degli strumenti di test/build/continuous integration)} \\
 
@@ -110,6 +134,8 @@ Attenzione ai requirement non funzionali: 1) non siano troppo vaghi altrimenti s
 
 \textbf{Functional Requirements}\\
 
+In according to agile methodologies in the first sprint we write functional requirements with user cases like "As..I want..For.."
+
 - Insert here use cases -\\ 
 
 
@@ -121,6 +147,8 @@ Attenzione ai requirement non funzionali: 1) non siano troppo vaghi altrimenti s
 - Reattività app protezione civile\\
 
 - Sicurezza lato protezione civile per login (si è pensato con token/autenticazione) [tra le cose non fatte]
+
+- Mantenere le informazioni relative agli alert memorizzate su un DB
 
 
 
