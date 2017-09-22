@@ -1,0 +1,182 @@
+\documentclass[10pt,english]{article}
+%\documentclass[10pt,italian]{article} % TO WRITE IN ITALIAN, UNCOMMENT THIS LINE AND COMMENT THE ABOVE ONE
+%\usepackage[utf8]{inputenc} % opzione per caratteri ISO-8859-1, CONSENTE L'USO DELLE ACCENTATE
+\usepackage{hyperref}
+
+% MARGINI LARGHI
+\textwidth 6.3 in % Width of text line.
+    \textheight 9.2 in
+    \oddsidemargin 0 in      %   Left margin on odd-numbered pages.
+    \evensidemargin 0 in      %   Left margin on even-numbered pages.
+    \topmargin 0.2 in
+    \headheight 0 in       %   Width of marginal notes.
+    \headsep 0 in
+    \topskip 0 in
+
+\begin{document}
+
+\begin{titlepage} % Suppresses headers and footers on the title page
+
+	\centering % Centre everything on the title page
+	
+	\scshape % Use small caps for all text on the title page
+	
+	\vspace*{\baselineskip} % White space at the top of the page
+	
+	%------------------------------------------------
+	%	Title
+	%------------------------------------------------
+	
+	\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} % Thick horizontal rule
+	\rule{\textwidth}{0.4pt} % Thin horizontal rule
+	
+	\vspace{0.75\baselineskip} % Whitespace above the title
+	
+	{\LARGE  D-RESCUE \\Natural Disaster\\Alert and Rescue} % Title
+	
+	\vspace{0.75\baselineskip} % Whitespace below the title
+	
+	\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt} % Thin horizontal rule
+	\rule{\textwidth}{1.6pt} % Thick horizontal rule
+	
+	\vspace{2\baselineskip} % Whitespace after the title block
+	
+	%------------------------------------------------
+	%	Subtitle
+	%------------------------------------------------
+	
+	
+	Repo: https://github.com/SofiaRosetti/S3-16-d-rescue % Subtitle or further description
+	
+	\vspace*{3\baselineskip} % Whitespace under the subtitle
+	
+	%------------------------------------------------
+	%	Editor(s)
+	%------------------------------------------------
+	
+	Edited By
+	
+	\vspace{0.5\baselineskip} % Whitespace before the editors
+	
+	{\scshape\Large Samantha Bandini \\ Elisa Casadio \\ Martina Giovanelli \\ Anna Giulia Leoni \\ Sofia Rosetti} % Editor list
+	
+	\vspace{0.5\baselineskip} % Whitespace below the editor list
+	
+	%TODO
+%	\textit{PPS Project} % Editor affiliation
+	
+	\vfill % Whitespace between editor names and publisher logo
+	
+	%------------------------------------------------
+	%	Publisher
+	%------------------------------------------------
+	
+	\vspace{0.3\baselineskip} % Whitespace under the publisher logo
+	
+	25/09/2017 % Publication year
+	
+	{\large Cesena, Ingegneria e Scienze Informatiche} % Publisher
+
+\end{titlepage}
+
+\section*{Cose da fare}
+
+\subsubsection*{Appunti dalle richieste}
+
+\textbf{PRIMA: descrizione anche sommaria di cosa il sistema implementato realizza}
+
+\textbf{1.Processo di sviluppo adottato (modalità di divisione in itinere dei task, meeting/interazioni pianificate, modalità di revisione in itinere dei task, scelta degli strumenti di test/build/continuous integration)} \\
+
+•	uno studente (ad esempio, chi ha l'idea del progetto) fungerà da product owner, oltre che da sviluppatore
+•	in un meeting iniziale si rediga un product backlog, e si definisca un primo sprint organizzativo (preparazione della build, identificazione requisiti base e architettura)
+•	si definiscano via-via delle sprint da 25-30 ore di lavoro (una settimana full-time), in modo da realizzarne 3-4 in tutto
+•	si cerchi ad ogni sprint di ottenere risultati "tangibili", con già un valore per gli stakeholder (i docenti)
+•	si tenga anche uno sprint backlog, e si facciano meeting frequenti, e meeting a inizio/fine sprint (con brevissimo report del risultato, anch'esso da tenere in versione)
+
+
+*) Le scelte tecnologiche non dovrebbero essere anticipate troppo per ovvi motivi.. prima le fate prima impattano tutta la parte successiva e quindi diventano più difficilmente riconsiderabili (comunque in linea di principio ogni scelta potrebbero stare ovunque, dai requirement fino all'implementazione) \\
+\\-----------------------------------------------------------------------------------------------------\\
+Software development process
+\\-----------------------------------------------------------------------------------------------------\\
+\textbf{2.Requisiti (funzionali, non funzionali, etc..)} \\
+(2-3 facciate)
+Attenzione ai requirement non funzionali: 1) non siano troppo vaghi altrimenti sono inverificabili, e quindi praticamente inutili; 2) il sistema è distribuito, quindi è inevitable dire cosa vi aspettate in termindi di robustezza a cambiamenti/guasti (quali?, come?), e scalabilità
+\\-----------------------------------------------------------------------------------------------------\\
+
+2 Requirements 
+2.1 Glossary 
+2.2 Business Requirements 
+2.3 Users Requirements 
+2.4 Functional Requirements
+2.5 Non-functional Requirements \\
+\\-----------------------------------------------------------------------------------------------------\\
+\textbf{3.Design architetturale (pattern architetturali usati, componenti del sistema distribuito, scelte tecnologiche cruciali ai fini architetturali -- corredato da pochi ma efficaci diagrammi)} \\
+
+*) Ricordate che una scelta architetturale può ritenersi giustificata o meno (e dovremo capirlo) solo a fronte dei requirement che avete indicato
+
+*) L'architettura deve spiegare quali sono i sotto-componenti del sistema (da 3 a 10, diciamo), ognuno cosa fa, chi parla con chi e per dirsi cosa -- i diagrammi aiutano
+\\-----------------------------------------------------------------------------------------------------\\
+ Architectural Design
+MVC Architecture
+Client-Server Architecture
+ - RabbitMQ MOM 
+\\-----------------------------------------------------------------------------------------------------\\
+
+\textbf{4.Design di dettaglio (pattern di progettazione, organizzazione del codice -- corredato da pochi ma efficaci diagrammi)} \\
+
+*) Il design di dettaglio "esplode" (dettaglia) l'architettura, ma viene concettualmente prima dell'implementazione, quindi non metteteci diagrammi ultra-dettagliati estratti dal codice, quelli vanno nella parte di implementazione
+
+\textbf{5.Implementazione (per ogni studente, una sotto-sezione descrittiva di cosa fatto/co-fatto e con chi)} \\
+
+*) L'implementazione "esplode" il design, ma solo laddove pensiate che serva dire qualcosa
+
+\textbf{6.Restrospettiva (descrizione finale dettagliata dell'andamento dello sviluppo, del backlog, delle iterazioni; commenti finali)} \\
+
+*) Cercate di dare una idea di quanto pensate che i vostri test automatizzati coprano il codice e dove: è importante per stimare il potenziale impatto di una modifica al software\\
+
+
+Si noti che la retrospettiva è l'unica sezione che può citare aneddoti di cosa è successo in itinere, mentre le altre sezioni fotografano il risultato finale. Se gli studenti decideranno (come auspicato) di utilizzare un product backlog e/o dei backlog delle varie iterazioni/sprint, è opportuno che questi siano file testuali tenuti in versione in una cartella "process", così che sia ri-verificabile a posteriori la storia del progetto.\\
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+
+Some useful latex commands:\\
+
+\begin{itemize}
+\item FirstItem  \texttt{A command}\\
+
+
+\item Something Big: what it does: \\
+- \textit{Something}, what it does.\\
+- \textit{Other}, what it does.
+
+\end{itemize}
+
+\section*{A section}
+
+\subsubsection*{A subsection}
+Something $"\texttt{some formatted code}:\textbf{code}"$\\
+
+NOTE Something: $command$ (to write a method name for example) or use it for field name like $player\textbf{ID}$. 
+
+\end{document}
+
+
+    
+    
