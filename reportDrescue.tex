@@ -65,8 +65,33 @@ Una volta interpellata la squadra bisogna fare in modo che tutti coloro che poss
 
 *) Le scelte tecnologiche non dovrebbero essere anticipate troppo per ovvi motivi.. prima le fate prima impattano tutta la parte successiva e quindi diventano più difficilmente riconsiderabili (comunque in linea di principio ogni scelta potrebbero stare ovunque, dai requirement fino all'implementazione) \\
 
+
+
 \section{Development methodology}
+Agile
+
+La gestione delle sprint si è svolta in modo flessibile a causa di impegni personali dei componenti.
+
+%TODO da riguardare
+Each Sprint started with the product backlog (where all the main tasks are defined) followed by the Sprint Backlog where all the created tasks were well discussed and divided in more defined and detailed subtasks. During the first 3-4 Sprints each member of the team used to volunteer to be assigned to one or more tasks. As the development continued, each member was assigned to a well defined and specified sub-system, creating a better organized environment where everybody knew exactly what the other was working on. At the end of each week, we used one hour of our time (Sprint Retrospective) to discuss about what went good and what had to be improved during the next Sprint
+
 \section{Development tools}
+IntelliJ
+
+Git
+
+Github
+
+Gradle
+
+Travis CI
+
+Trello
+
+TeamViewer
+
+Test: JUnit e ScalaTest
+%TODO da specificare nelle singole implementazioni
 
 \chapter{Requirements}
 (2-3 facciate)
@@ -79,9 +104,11 @@ In according to agile methodologies in the first sprint we write functional requ
 
 \section{Non-functional requirements}
 - Gli alert devono avere una certa "affidabilità", così da non "disturbare" la protezione civile con alert non veritieri o riempire il db con molte segnalazioni relative allo stesso evento (per questo utilizzati upvotes all'interno di alert)\\
+In questo modo l'utente fa prima ad effettuare una segnalazione\\
+Sul DB si ha una tabella con meno record e che quindi facilita l'esecuzione delle query\\
+Lato protezione civile si vedono in cima alla lista gli ultimi alert e gli alert con upvote recenti\\
 - App mobile user-friendly\\
-- Reattività app protezione civile\\
-- Sicurezza lato protezione civile per login (si è pensato con token/autenticazione) [tra le cose non fatte]
+- Aggiornamento real-time della view della protezione civile per alert-upvotes senza effettuare richieste specifiche.\\
 - Mantenere le informazioni relative agli alert memorizzate su un DB
 
 \chapter{Architectural design}
@@ -92,14 +119,91 @@ In according to agile methodologies in the first sprint we write functional requ
 
 *) L'architettura deve spiegare quali sono i sotto-componenti del sistema (da 3 a 10, diciamo), ognuno cosa fa, chi parla con chi e per dirsi cosa -- i diagrammi aiutano\\
 
+Disegnigno introduttivo
+
+\section{Server-DB}
+AWS: deciso in remoto per evitare di avere copie duplicate e necessità di ricreare DB e server
+
+MySQL: deciso per compatibilità con le varie componenti utilizzate (più conosciuto/più documentazione), gratuito.
+Indecise con no sql poi scelto mysql perché db parecchio grande e per avere sicurezze di non incorrere in spese.
+
 \section{MVC Architecture}
-\section{Client-Server Architecture}
+The MVC design pattern decouples these major components allowing for efficient code reuse and parallel development.
+%https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller
+\section{Data Access Object}
+Data Access Object (DAO) is a commonly used pattern to persist domain objects into a database. The most common form of a DAO pattern is a class that contains CRUD methods for a particular domain entity type.
+The pattern has these advantages:
+\begin{itemize}
+\item It separates the domain logic that use it from any particular persistence mechanism or APIs.
+\item The interface methods signature are independent of the content of the implementation class. When you add a field to the Object of DAO, you don’t need to change the interface nor its callers.
+\end{itemize}
+
+A better pattern is Repository, it uses a metaphor of a Collection. This metaphor gives the pattern a tight contract and make it easier to understand.\\
+In addition in this case, inheritance, abstract classes, and template methods are used to avoid duplicate code since all models need some common methods, this will be discussed in the next chapter.
+So we have a GenericDAO, with the basic methods, from which all other DAOs extends.
+In the example X.X we see the GenericDao with methods insert, delete, selectByIdentifier and insertAndGet.
+\\{insert example x.x - screen1 or code of screen1}\\
+The \textit{insert} and \textit{delete} methods look identical to the methods of the simple DAO's, but the \textit{selectByIdentifier} method differs to the standard DAO’s \textit{findById} method by taking an ObjectModel object rather than the identifier (ObjectModel identifier). 
+Making this change you avoid to expose the type of ObjectModel identity to the interface.
+
+In our case Repository pattern is realized with DAO.
 \section{RabbitMQ MOM}
+\subsection{Client-Server}
+\subsection{Peer-To-Peer}
 
 \chapter{Detail design}
 %TODO
 (pattern di progettazione, organizzazione del codice -- corredato da pochi ma efficaci diagrammi)\\
 *) Il design di dettaglio "esplode" (dettaglia) l'architettura, ma viene concettualmente prima dell'implementazione, quindi non metteteci diagrammi ultra-dettagliati estratti dal codice, quelli vanno nella parte di implementazione
+
+\section{Graphical User Interface Design}
+\subsection{Mobile App}
+\subsection{Civil Protection}
+
+\section{Code organization}
+Tutto all'interno dello stesso progetto dividendolo in moduli
+Screenshot + descrizione moduli
+\begin{itemize}
+\item civilprotection
+\item mobileuser
+\item server
+\item utils
+\item utils-java
+\end{itemize}
+
+\section{Patterns}
+\begin{itemize}
+\item Builder: utilizzato quando si hanno più di 2/3 parametri
+\item Template Method: utilizzato per la gestione delle risposte dal server e per raggruppare oggetti simili con metodi in comune per accedere ad oggetti nel database
+\item Singleton: utilizzato per il coordinator
+\item View-Holder: utilizzato per gli adapter Android
+\item Static factory: utilizzato per la creazione della connessione al database
+\item Observer: utilizzato per gestire l'aggiornamento delle view a seguito di cambiamenti del model
+\end{itemize}
+
+\section{Communication messages}
+Diagrammi di sequenza per RPC e forward + comunicazione tra CP
+3 tabelle (mobile, alert, civilprotection)
+
+Mobile user - server communication:
+
+\begin{center}
+\begin{tabular}{ |c|c|c|c| } 
+\hline
+Servizio 			& Richiesta 	& Risposta	& Tipo 	\\
+\hline
+Sign Up  				& SignUpMessage		&  SuccessfulMessage 	& RPC	\\ 
+(-0.75,0.1) 0.02 			& 35327 		&  18820	& RPC	\\ 
+(0.7485,0.0505) 0.000002 	& 1142 			&  433		& RPC	\\ 
+(0.254,0.0505) 0.001		& 44473       	&  21020	& RPC	\\
+\hline
+\end{tabular}
+\end{center}
+
+Civil protection - server communication:
+
+Civil protection - Civil protection communication:
+
 
 \chapter{Implementation}
 
@@ -110,7 +214,28 @@ In according to agile methodologies in the first sprint we write functional requ
 \section{Martina Giovanelli}
 \section{Anna Giulia Leoni}
 \section{Sofia Rosetti}
+
+\section{Common parts}
 %TODO Common part
+I messaggi sono stati implementati a seconda delle necessità facendo per ognuno i test.
+
+\subsection{Samantha Bandini - Sofia Rosetti}
+MVC (focus home e login)
+
+\subsection{Samantha Bandini - Elisa Casadio - Anna Giulia Leoni}
+Eccezioni
+
+\subsection{Elisa Casadio - Anna Giulia Leoni}
+Server refactor in scala
+
+Server configuration
+
+\subsection{Martina Giovanelli - Anna Giulia Leoni}
+RabbitMQ
+
+Definizione struttura messaggi (message solo per comunicazione punto-punto e abstract message per routing)
+
+Select in enrollcontroller
 
 %TODO chapter or section?
 %\chapter{Testing}
@@ -124,8 +249,69 @@ In according to agile methodologies in the first sprint we write functional requ
 
 Si noti che la retrospettiva è l'unica sezione che può citare aneddoti di cosa è successo in itinere, mentre le altre sezioni fotografano il risultato finale. Se gli studenti decideranno (come auspicato) di utilizzare un product backlog e/o dei backlog delle varie iterazioni/sprint, è opportuno che questi siano file testuali tenuti in versione in una cartella "process", così che sia ri-verificabile a posteriori la storia del progetto.
 
+%TODO riassumere e preparare i file per il repository (process/sprints/report)
+1 Sprint
+Organizzazione per capire un po’ le competenze di ognuna.
+
+Suddivisione generale compiti 
+
+Decisione di come tenerci aggiornate (tools)
+
+Molti documenti su google drive (su cui lavorare in contemporanea)
+
+Alcuni file su dropbox (apk o file utili per configurazioni al pc)
+
+Product backlog (difficoltà stima tempi)
+
+Diagrammi di sequenza 
+
+Schemi su excel per messaggi da preparare per le varie code
+
+Configurazione degli ambienti
+
+2 Sprint 
+
+Inizio configurazioni di base (orientate su server e db) 
+
+
+-	Fatte prove per impostare la macchina per capire se potesse essere quello che poteva servire a noi (nessuna di noi aveva mai utilizzato aws o configurato una qualsiasi macchina linux con questo scopo prima)
+-	Abbiamo molti dati e per essere sicure di avere un sistema aggiornato e persistente almeno per quanto riguarda alert e protezioni civili, si è ritenuto importante mantenere memorizzate alcune informazioni e “predisporre” il db per futuri cambiamenti, aggiornamenti
+
+\section{Encountered issues}
+Scelta AWS dopo perdita di tempo con Google App Engine
+
+Incompatibilità Scala-Android
+
+Pessimo supporto di IntelliJ con più moduli tra cui Android (Android ILogger)
+
+Il DB poteva esser fatto in Scala ma la valutazione è stata fatta troppo tardi.
+
+I DAO comportano duplicazione di codice. Si è cercato di gestire questo aspetto il meglio possibile.
+
+Per consegnare entro i 2 mesi dall'accettazione del progetto l'ultima parte (civilprotection) è stata implementata senza eccellenza tecnica: questo per completare i principali requirements inizialmente definiti.
+
+Difficoltà nella stima delle tempistiche.
+
 \section{Final judgement}
+
 \section{Future developments}
+Fornire indicazioni alla protezione civile per aiutare nella scelta di un soccorso (già gestito lato DB-server): Rilevanza per alert con molti upvote / in base alla popolazione della zona, Algoritmo intelligente per la selezione della squadra in base alla distanza
+
+CP: Mappa e possibilità di filtrare sui tipi di eventi
+
+Zone di intervento delle CP che possono essere intersecate (già gestito lato DB-server)
+
+App per le squadre di soccorso e per i soccorritori
+
+Eventi realmente accaduti e relative statistiche
+
+Estensione dell'applicazione mobile per altre piattaforme + miglioramenti (modifica profilo utente)
+
+Live rescues: necessita salvataggio soccorsi su DB (evento accaduto, CP che ha fatto partire il soccorso e squadra di soccorso)
+
+Sicurezza lato protezione civile per login (si è pensato con token/autenticazione)
+
+User stories in grigio
 
 \end{document}
 
