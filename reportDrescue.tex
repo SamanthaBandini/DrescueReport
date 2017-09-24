@@ -196,19 +196,37 @@ Diagrammi di sequenza per RPC e forward + comunicazione tra CP
 Mobile user - server communication:
 
 \begin{center}
-\begin{tabular}{ |c|c|c|c| } 
+\begin{tabular}{ |p{4cm}|p{4cm}|p{4cm}|p{2cm}| } 
 \hline
-Servizio 			& Richiesta 	& Risposta	& Tipo 	\\
+Service 			& Request message 	& Response message		& Type 	\\
 \hline
-Sign Up  				& SignUpMessage		&  SuccessfulMessage 	& RPC	\\ 
-(-0.75,0.1) 0.02 			& 35327 		&  18820	& RPC	\\ 
-(0.7485,0.0505) 0.000002 	& 1142 			&  433		& RPC	\\ 
-(0.254,0.0505) 0.001		& 44473       	&  21020	& RPC	\\
+Sign Up  			& SignUpMessage(name, surname,email,pass word,phoneNumber)		& SuccessfulMessage 	& RPC	\\ 
+Login 				& LoginMessage(email, password) 	& ResponseLoginMessage (UserImpl,List<Event TypeImpl>)	& RPC	\\ 
+Request profile 	& RequestProfileMessage (email)		& ProfileMessage(User Impl)	& RPC	\\ 
+Change password		& ChangePasswordMess age(email,oldPassword, newPassword)	& SuccessfulMessage	& RPC	\\
+Get alerts		& RequestAlertsMessage (latitude,longitude)	& AlertsMessage(List <AlertsImpl>)	& RPC	\\
+New alert		& NewAlertMessage(user ID,eventType,latitude, longitude)	& no response but ForwardObjectMessage (List<String>,Object Model)	& p/s	\\
+Upvote alert		& RequestUpvoteAlert Message(userID, alertID)	& no response but ForwardObjectMessage (List<String>,Object Model)	& p/s	\\
 \hline
 \end{tabular}
 \end{center}
 
 Civil protection - server communication:
+
+\begin{center}
+\begin{tabular}{ |p{4cm}|p{4cm}|p{4cm}|p{2cm}| } 
+\hline
+Service 			& Request message 	& Response message		& Type 	\\
+\hline
+Login	& CpLoginMessage(cpID, password)	& RescueTeamsMessage (List<RescueTeamImpl>) 	& RPC	\\ 
+Get alerts CP	& RequestCpAlertsMes sage(cpID,password)	& AlertsMessage (List<AlertImpl>) 	& RPC	\\ 
+Register team at CP		& EnrollRescueTeamMess age(rescueTeamID,cpID)	& SuccessfulMessage & RPC	\\ 
+Get CP of rescue team 	& GetAssociatedCpMess age(rescueTeamID)		& CivilProtectionsMess age(List<CivilProtec tionImpl>)	& RPC	\\ 
+New team	& NewRescueTeamMess age(rescueTeamID,name, password,latitude,lon gitude,phoneNumber)	& SuccessfulMessage	& RPC	\\
+Get not enrolled rescue teams & GetRescueTeamsNot EnrolledMessage	& RescueTeamsMessage (List<RescueTeamImpl>)	& RPC	\\
+\hline
+\end{tabular}
+\end{center}
 
 Civil protection - Civil protection communication:
 
