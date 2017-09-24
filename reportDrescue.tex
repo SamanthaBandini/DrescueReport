@@ -222,7 +222,61 @@ Civil protection - Civil protection communication:
 \section{Martina Giovanelli}
 \section{Anna Giulia Leoni}
 \section{Sofia Rosetti}
-alertentry e enrolledteaminfo che integrano civilprotectiondata
+In the DRescue project, Sofia Rosetti contribution was mainly related to design and implementation of:
+
+\begin{itemize}
+\item Geocoding and reverse geocoding management
+\item Model interfaces and classes
+\item Civil protection views
+\item Civil protection Model-View-Controller
+\end{itemize}
+
+\subsection{Geocoding and reverse geocoding management}
+The geocoding and reverse geocoding service needed inside the project were designed and implemented using the Google Maps Geocoding API.
+
+As Google explains, geocoding is the process of converting addresses (like a street address) into geographic coordinates (like latitude and longitude), while reverse geocoding is the process of converting geographic coordinates into a human-readable address.
+
+As for the requirements of the project, it has been necessary to retrieve latitude and longitude coordinates giving a String corresponding to a generic address. This has been possible thanks to a \textbf{geocoding} request. The relative response consists in a JSON containing two root elements, ``status'' and ``results''. The ``results'' element contains an array of geocoded address and geometry information. From the geometry information it has been possible to retrieve the location, which returns latitude and longitude coordinates. 
+
+Instead, \textbf{reverse geocoding} requests have been used to retrieve a district acronym (e.g. FC, RA, RN...) from latitude and longitude coordinates. The relative response contains a ``result'' element here too: instead of the geometry information, in this case we needed the ``address\_components'' information. 
+
+It is composed of different elements like ``country'', ``root'' or ``street\_number'', but the interested one was ``\texttt{administrative\_area\_level\_2}'', which has a short name corresponding exactly to the district acronym we needed.
+
+The \texttt{utils/src/main/java/it/unibo/drescue/geocoding} package contains geocoding interface, relative implementation class and exception class. Geocoding interface provides only two methods \emph{getDistrict()} and \emph{getLatLng()} that meet exactly the two requirements described above.
+
+The \texttt{utils/src/test/java/it/unibo/drescue/geocoding} package contains a JUnit class test which verifies a proper operation.
+
+\subsection{Model interfaces and classes}
+In package \texttt{utils-java/src/main/java/it/unibo/drescue/model} there are all model interfaces and classes.
+
+Every model entity represents one database table with all its attributes, so every interface provides methods to access and set the corresponding fields.
+
+In the same package some other classes ending by ``Builder'' can be found. This because for class constructors with more than three fields the Builder pattern has been used.
+
+Every model class has been tested writing JUnit test classes, which can be found under the \texttt{utils-java/src/test/java/it/unibo/drescue/model} package.
+
+\subsection{Civil protection views}
+In order to mantain most of civil protection module implemented using the Scala language, views have been created by hand with \textbf{ScalaFX}. 
+
+Views have been organized as following.
+
+There is a \texttt{MainView} scala class, which represents the ``container'' class and has container elements, like \textit{stage} and \textit{scene}.
+Then, four scala classes (\texttt{LoginGrid}, \texttt{HomeGrid}, \texttt{EnrollTeamGrid} and \texttt{ManageRescuesGrid}) represent the \textit{GridPane} which changes depending on the view to be displayed.
+Every \textit{GridPane} is built with a row-column structure that allows to position elements and let them cover more than one row or one column.
+
+The \texttt{MainView} provides a method to change the view that creates a new specific grid corresponding to one of the previous classes.
+
+A \texttt{ViewConstants} object has been implemented too with the purpose of collecting all used constants and remove all magic numbers inside view classes.
+
+\subsection{Civil protection Model-View-Controller}
+Individual contribution in civil protection Model-View-Controller was firstly focused on the base arrangement of links between the views in consequence of all buttons pressure.
+
+Every button has been provided of a mouse event able to catch the mouse click. So relative controller methods are called and all relative actions are performed.
+
+Part of the individual contribution was then oriented to implement two scala classes that belong to the civil protection local model.
+The \texttt{AlertEntry} and \texttt{EnrolledTeamInfo} classes have been created to simplify insertion and values retrieval from the \textit{TableView} elements contained in the relative views. An \texttt{AlertEntry} element represents a table entry of the \texttt{HomeGrid}, because it's necessary to show the alert ID, the timestamp, latitude and longitude, the user and the district ID, the event name and the upvotes with a table representation. Similarly, the an \texttt{EnrollTeamInfo} element represents a table entry of the \texttt{ManageRescuesGrid}, because in this case it's necessary to show the team ID, name and phone number, if the team is available or not, the ID of the civil protection which occupied the team and the ID of the alert for which the team has been sent.
+
+These two classes are also used in the \texttt{CivilProtectionData} class, which represents the model that every civil protection needs to mantain locally in order to get last alerts list and to manage rescue teams.
 
 \section{Common parts}
 %TODO Common part
