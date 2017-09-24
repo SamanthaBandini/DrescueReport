@@ -24,34 +24,17 @@
 
 \chapter{Introduction}
 
-%TODO 
-{PRIMA: descrizione anche sommaria di cosa il sistema implementato realizza}
+The project consists in a monitoring and rescue system in case of natural disasters. 
 
-%TODO
-PROGETTO: Segnalazione, raccolta ed elaborazione dati sulle catastrofi naturali.\\
+There is a smartphone application which allows users to alert in the event of hearthquake, landslide, fire and other emergencies.
+Alerts are collected and processed with the aim of informing the civil protection of the area in order to coordinate rescue teams.
+Civil protection desktop applications communicate with each other to get information about available or occupied rescue teams.
 
-Il progetto consisterà in un sistema di monitoraggio/intervento in caso di catastrofi naturali. Sarà presente un’applicazione per smartphone che consentirà ai singoli utenti di effettuare una segnalazione relativamente ad una particolare evento (terremoto, frana, incendio…). Le segnalazioni verranno raccolte ed elaborate con lo scopo di fornire indicazioni alla protezione civile per coordinare le squadre di soccorso.
-Parte della computazione relativa alla scelta della squadra di soccorso più adeguata sarà distribuita tra i diversi applicativi della protezione civile, che dovranno comunicare tra loro per ottenere informazioni sulle squadre di soccorso disponibili o occupate.
+User side there is a native Android application used to warn a natural disaster, sending an alert containing the position to the server.
 
+Civil protection side there is a desktop application used to coordinate rescues.
 
-STRUTTURA SISTEMA:\\
-lato utente: web app o app Android nativa (più orientato sulla seconda) da cui l’utente segnala l’avvenimento di un terremoto, eruzione vulcanica, tempesta, ecc. inviando al server nella segnalazione la sua posizione; (in questo modo senza la necessità di simulare sensori)
-lato coordinatore delle squadre di soccorso: software desktop per coordinare l’arrivo dei soccorsi, decidere quale squadra tra quelle localizzate sul territorio deve intervenire
-database per mantenere le segnalazioni
-server per fare analisi, segnalare ai coordinatori delle squadre di soccorso che è avvenuta una catastrofe\\
-
-Territorio Italiano\\
-
-LATO OPERATORE: \\
-Esempio di come abbiamo pensato la gestione delle squadre di soccorso: 
-Un operatore gestisce una zona, sa che può contattare certe squadre di soccorso perchè si sono rese disponibili/rendono servizio presso di lui. Una squadra di soccorso può fornire i propri servizi a più operatori e sono definite in termini di mezzi che hanno a disposizione (es. due volanti, tre camion dei pompieri, due ambulanze…). 
-{NOTA: in pratica, come si vede nel disegno fatto nella pagina dopo, non abbiamo un nuovo applicativo per le squadre di soccorso, sono sempre gli operatori ad occuparsene, mantenendo però le informazioni relative alle squadre di soccorso (probabilmente condivise tra alcuni operatori) al loro interno. Abbiamo visto che nella realtà le squadre di soccorso si “iscrivono” presso diverse “protezioni civili”(i nostri operatori)}\\
-
-Esempio d’uso applicativo.
-Viene segnalato un incendio da molte persone 
-Segnalazioni ritenute veritiere dall’operatore (algoritmo)
-L’operatore seleziona la squadra (a sua disposizione) migliore da inviare sul posto 
-Una volta interpellata la squadra bisogna fare in modo che tutti coloro che possono attingere a quella squadra vengano a conoscenza del fatto che quella squadra è impegnata momentaneamente, e anche quando questa completa il proprio lavoro. Quindi è necessario mantenere memorizzati le disponibilità delle varie squadre.\\
+Each civil protection manages a single district, but each rescue team can join different civil protections. This is why coordination is important in order to know real-time which teams are available and, if not, when they will be.
 
 
 \chapter{Software development process}
@@ -99,8 +82,26 @@ Attenzione ai requirement non funzionali: 1) non siano troppo vaghi altrimenti s
 
 \section{Functional requirements}
 
-In according to agile methodologies in the first sprint we write functional requirements with user cases like "As..I want..For.."
-- Insert here use cases -\\ 
+According to agile methodologies in the first sprint we wrote user cases like ``As.. I want.. For..", which have highlighted these functional requirements:
+
+\begin{itemize}
+\item A not logged user has to register or login to access the platform.
+\item A user needs to view last fifty alerts of his area, to see what happens nearby.
+\item A user needs to send an alert to inform civil protection about a particular event.
+\item A user needs to view his profile to check his register information.
+\item A user needs to change his password to update it.
+\item A user needs to confirm an alert (upvoting it) to increase the alert reliability.
+\item A civil protection has to login to access the platform.
+\item A civil protection needs to receive alerts of its area to coordinate the rescues.
+\item A civil protection needs to visualize in action rescues to have a general view of rescues and occupied teams.
+\item A civil protection needs to enroll a rescue team in to send it when needed.
+\item A civil protection needs to receive notifications when a team is occupied in order to know which ones to send.
+\item A civil protection needs to decide which team is the most appropriate to send (at discretion of the civil protection user).
+\item A civil protection needs to notify the sending of a team for a specific alert in order to intervene in case of emergency.
+\item A civil protection needs to notify the end of a rescue to inform other civil protections that the team is available again.
+\item The server has to forward the alerts and the upvotes to the civil protection of the area in order to warn it.
+\item The server has to interact with the database as for user and civil protection requests in order to save datas.
+\end{itemize}
 
 \section{Non-functional requirements}
 - Gli alert devono avere una certa "affidabilità", così da non "disturbare" la protezione civile con alert non veritieri o riempire il db con molte segnalazioni relative allo stesso evento (per questo utilizzati upvotes all'interno di alert)\\
