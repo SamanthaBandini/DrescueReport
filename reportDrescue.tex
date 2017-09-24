@@ -130,6 +130,14 @@ Indecise con no sql poi scelto mysql perché db parecchio grande e per avere sic
 \section{MVC Architecture}
 The MVC design pattern decouples these major components allowing for efficient code reuse and parallel development.
 %https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller
+
+Con MVC si è gestito il modulo civilprotection in quanto è un applicativo desktop che comprende anche una parte rilevante di visualizzazione grafica.\\
+E' stato necessario effettuare una gestione orientata alla gestione dei dati relativi alla protezione civile che sta utilizzando l'applicativo.\\
+Disegno (controller grande + piccoli)\\
+Il design MVC è stato gestito come in figura X.\\
+Ognuna delle 4 view è associata ad un controller minore, il quale ha il riferimento ad un controller principale che ha il compito di interagire col modello.
+
+
 \section{Data Access Object}
 Data Access Object (DAO) is a commonly used pattern to persist domain objects into a database. The most common form of a DAO pattern is a class that contains CRUD methods for a particular domain entity type.
 The pattern has these advantages:
@@ -214,13 +222,27 @@ Civil protection - Civil protection communication:
 \section{Martina Giovanelli}
 \section{Anna Giulia Leoni}
 \section{Sofia Rosetti}
+alertentry e enrolledteaminfo che integrano civilprotectiondata
 
 \section{Common parts}
 %TODO Common part
 I messaggi sono stati implementati a seconda delle necessità facendo per ognuno i test.
 
 \subsection{Samantha Bandini - Sofia Rosetti}
-MVC (focus home e login)
+
+\subsubsection{MVC (focus home e login)}
+Il codice è stato organizzato con una suddivisione in package (model vero in altro modulo, model locale in localmodel, controllers in controller e views in view).\\
+E' stato definito il model da passare al controller principale (CivilProtectionData).\\
+L'aggiornamento delle view è stato impostato utilizzando il pattern Observer. Ad ogni cambiamento del modello la relativa view viene notificata e attraverso un ObservableBuffer viene aggiornata.\\
+
+
+\subsubsection{Model update management}
+AlertConsumer (è un consumer di RabbitMQ che rimane in attesa su una coda per ricevere i messaggi di ForwardAlertMessage e ForwardUpvotedAlertMessage; quando arrivano provvede all'aggiornamento del model) e RequestHandler (serve per far partire una future che ritorna un risultato che è la risposta che deve essere interpretata dal controller in quanto è un messaggio codificato tramite formato JSON)
+
+
+
+
+
 
 \subsection{Samantha Bandini - Elisa Casadio - Anna Giulia Leoni}
 Eccezioni
