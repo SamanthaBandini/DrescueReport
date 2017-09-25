@@ -417,13 +417,25 @@ AlertConsumer (è un consumer di RabbitMQ che rimane in attesa su una coda per r
 Eccezioni
 
 \subsection{Elisa Casadio - Anna Giulia Leoni}
-Server refactor in scala
+\subsubsection{Server structure}
+The code executed on server is located inside the \texttt{connection} package in \texttt{server} module.
 
-Server configuration
+\begin{itemize}
+\item \texttt{ServerMain} represents the main class of the module, contains the code to setup the connection to RabbitMQ broker and runs all the services.
+\item \texttt{Service} is a case class that represents a generic service. A new channel is created on the given connection and a new \texttt{ServerConsumer} is added to the channel and consume on the given queue.
+\item \texttt{ServerConsumer} is a simple server-side consumer extending the default RabbitMQ consumer and overriding the \emph{handleDelivery} method called when consuming a message. Furthermore, a class implementing \texttt{ServerOperation} trait must be passed to the consumer in order to access database and handle potentially the returning result. In case of \emph{accessDB} method throw an exception, the error is logged, otherwise the result is handled. 
+\item \texttt{ServiceOperation} is a trait modelling a general service to access database and handle the result. This trais is implemented by all classes that represent the specific services. The \emph{accessDB} method is where concreate access is using the data access object.
+\end{itemize}
+
+%%Server configuration
+\subsubsection{Server configuration}
+Anna Giulia following AWS Guidelines setup a preconfigured instance with RabbitMQ called \emph{Bitnami}.
+%installaggio java-scala
+%script per creare servizio
 
 \subsection{Martina Giovanelli - Anna Giulia Leoni}
 
-\subsection{Setup the connection}
+\subsubsection{Setup the connection}
 The package \texttt{connection} inside \texttt{utils-java} module contains the classes used to setup the communication through rabbitMQ used in every other module that needs to communicate with the server or other clients.
 \\\texttt{RabbitMQConnectionImpl} class implements \texttt{RabbitMQConnection} interface and contains methods to setup, close and get the real TCP connection with the RabbitMQ broker by setting the host address, port, username and password. 
 \\\texttt{RabbitMQImpl} class implements \texttt{RabbitMQ} interface and contains methods to setup, get and performs other operations related to the virtual connection (\textit{channel}) created on the TCP one like sending a message or adding a new consumer on the channel consuming on a specific queue.
