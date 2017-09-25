@@ -122,7 +122,7 @@ Lato protezione civile si vedono in cima alla lista gli ultimi alert e gli alert
 
 *) L'architettura deve spiegare quali sono i sotto-componenti del sistema (da 3 a 10, diciamo), ognuno cosa fa, chi parla con chi e per dirsi cosa -- i diagrammi aiutano\\
 
-Disegnigno introduttivo
+Disegnigno introduttivo è quello dell'Elisa
 
 \section{Server-DB}
 AWS: deciso in remoto per evitare di avere copie duplicate e necessità di ricreare DB e server
@@ -177,8 +177,30 @@ Making this change you avoid to expose the type of ObjectModel identity to the i
 
 In our case Repository pattern is realized with DAO.
 \section{RabbitMQ MOM}
-\subsection{Client-Server}
-\subsection{Peer-To-Peer}
+It was decided to adopt the Message-Oriented Middleware(MOM) RabbitMQ for the following reasons
+\begin{itemize}
+\item \textbf{Decoupling}: messages can be exchanged between system components which have been placed on the same or different network.
+\item \textbf{Flexibility}: heterogeneous integration between technology stack and different types of clients is guaranteed by AMQP (Advanced Message Queuing Protocol implemented by RabbitMQ) whose main responsibility is the interoperability of the systems inside the messaging systems.
+\item \textbf{Scalability}: system can scale horizontally easily by adding new Consumer.
+\end{itemize}
+
+A message producer produces messages and send them to the Message Broker which
+routes messages to the right consumers. A message consumer await the upcoming messages, then process the information in them.
+
+\subsection{Point-to-Point}
+Point-to-Point communication has been used for client-server communication where more clients can potentially send messages to a queue on which a server consumer of a specific service is waiting for messages.
+When the server receive a request that doesn't need a reply message has to forward the request as a new message to the right queue on which another client is listening.
+%TODO
+
+\subsection{Publish/Subscribe}
+Publish/Subscribe communication has been used to send a message to multiple clients with consumer consuming on the same queue. 
+Messages are not published directly to a queue, instead, the producer sends messages to an exchange.
+An exchange is responsible for the routing of the messages to the different queues. 
+The routing key is a message attribute added into the message header by the producer and it can be seen as an "address" that the exchange use to decide how to route the message. 
+A message goes to the queue(s) whose binding key exactly matches the routing key of the message.
+Subscribers needs to bind to the exchange in order to receive messages.
+This is used when a civil protection notice all the other civil protecions about the availability of a specific rescue team.
+
 
 \chapter{Detail design}
 %TODO
@@ -214,6 +236,9 @@ Screenshot + descrizione moduli
 \section{Communication messages}
 Diagrammi di sequenza per RPC e forward + comunicazione tra CP
 3 tabelle (mobile, alert, civilprotection)
+
+%TODO
+Diagramma delle classi dei messaggi
 
 Mobile user - server communication:
 
@@ -251,6 +276,16 @@ Get not enrolled rescue teams & GetRescueTeamsNot EnrolledMessage	& RescueTeamsM
 \end{center}
 
 Civil protection - Civil protection communication:
+
+\begin{center}
+\begin{tabular}{ |p{4cm}|p{4cm}|p{4cm}|p{2cm}| } \hline
+Service 			& Request message 	& Response message		& Type 	\\
+\hline
+Login	& CpLoginMessage(cpID, password)	& RescueTeamsMessage (List$<$RescueTeamImpl$>$) 	& RPC	\\ 
+Get alerts CP	& RequestCpAlertsMes sage(cpID,password)	& AlertsMessage (List$<$AlertImpl$>$) 	& RPC	\\ 
+\hline
+\end{tabular}
+\end{center}
 
 
 \chapter{Implementation}
@@ -512,9 +547,17 @@ The package \texttt{connection} inside \texttt{utils-java} module contains the c
 \\\texttt{RabbitMQConnectionImpl} class implements \texttt{RabbitMQConnection} interface and contains methods to setup, close and get the real TCP connection with the RabbitMQ broker by setting the host address, port, username and password. 
 \\\texttt{RabbitMQImpl} class implements \texttt{RabbitMQ} interface and contains methods to setup, get and performs other operations related to the virtual connection (\textit{channel}) created on the TCP one like sending a message or adding a new consumer on the channel consuming on a specific queue.
 
-Definizione struttura messaggi (message solo per comunicazione punto-punto e abstract message per routing)
+\subsubsection{Message structure definition}
+The package \texttt{communication/messages} inside \texttt{utils-java} module contains the template classes representing the messages exchanged within the entire system.
+More specifically two type of messages have been created:
+\begin{itemize}
+\item \texttt{AbstractMessage} implementing \texttt{Message} interface which represents the message to be exchanged in client-server and server-client communication. 
+\item \texttt{AbstractRoutingMessage} implementing \texttt{RoutingMessage} interface which represents the message to be exchanged in peer-to-peer communication to address the message to the right civil protections. 
+\end{itemize}
+This hierarchy is shown in the Detail Design section.
 
-Select in enrollcontroller
+All the system components communicate through messages exchanged in JSON format. The chosen library for this aim is \textit{Gson}. \\
+\texttt{GsonUtils} class is a simple wrapper of Gson that contains the method \textit{toGson} to serialize a generic Message into its equivalent JSON representation and the method \textit{fromGson} to deserialize the JSON String passed into a Message of the specified class.
 
 %TODO chapter or section?
 %\chapter{Testing}
