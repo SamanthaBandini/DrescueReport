@@ -106,13 +106,15 @@ According to agile methodologies in the first sprint we wrote user cases like ``
 \end{itemize}
 
 \section{Non-functional requirements}
-- Gli alert devono avere una certa "affidabilità", così da non "disturbare" la protezione civile con alert non veritieri o riempire il db con molte segnalazioni relative allo stesso evento (per questo utilizzati upvotes all'interno di alert)\\
-In questo modo l'utente fa prima ad effettuare una segnalazione\\
-Sul DB si ha una tabella con meno record e che quindi facilita l'esecuzione delle query\\
-Lato protezione civile si vedono in cima alla lista gli ultimi alert e gli alert con upvote recenti\\
-- App mobile user-friendly\\
-- Aggiornamento real-time della view della protezione civile per alert-upvotes senza effettuare richieste specifiche.\\
-- Mantenere le informazioni relative agli alert memorizzate su un DB
+
+Non-functional requirements have been identified as following:
+
+\begin{itemize}
+\item Alerts must have a certain reliability, so that civil protections won't receive untruthful alerts and the database won't be overloaded with too many alerts relative to the same event. This way, users can signal the event easier and faster, query executions are simplified and civil protections can visualize last alerts and alerts with recents upvotes at the top of the list.
+\item The mobile application must be user-friendly.
+\item Civil protection views must be updated real-time without performing a specific request.
+\item Alert information must be saved into a database.
+\end{itemize} 
 
 \chapter{Architectural design}
 
@@ -441,7 +443,7 @@ Every model entity represents one database table with all its attributes, so eve
 
 In the same package some other classes ending by ``Builder'' can be found. This because for class constructors with more than three fields the Builder pattern has been used.
 
-Every model class has been tested writing JUnit test classes, which can be found under the \texttt{utils-java/src/test/java/it/unibo/drescue/model} package.
+Every model class has been tested trying to isolate single pieces of the code. For this purpose JUnit test classes have been written together with each model class. They can be found under the \texttt{utils-java/src/test/java/it/unibo/drescue/model} package.
 
 \subsection{Civil protection views}
 In order to mantain most of civil protection module implemented using the Scala language, views have been created by hand with \textbf{ScalaFX}. 
@@ -457,9 +459,13 @@ The \texttt{MainView} provides a method to change the view that creates a new sp
 A \texttt{ViewConstants} object has been implemented too with the purpose of collecting all used constants and remove all magic numbers inside view classes.
 
 \subsection{Civil protection Model-View-Controller}
-Individual contribution in civil protection Model-View-Controller was firstly focused on the base arrangement of links between the views in consequence of all buttons pressure.
+Individual contribution in civil protection was firstly focused on the base application arrangement. The system has been designed following the Model-View-Controller pattern, therefore the views have to handle presentation and user interaction, the model handles the application logic and the controller coordinates model and views.
 
-Every button has been provided of a mouse event able to catch the mouse click. So relative controller methods are called and all relative actions are performed.
+The civil protection controller is composed of five controller classes, one for each grid and a main controller. This because each grid only communicates with its relative controller, and then each controller can communicate with the main controller.
+
+The grids' container class (\texttt{MainView}) has the reference of each controller in order to instanciate each grid with the proper controller. This has been implemented using the Builder pattern with named parameters.
+
+Some buttons have been inserted to move among views. Every button has been provided of a mouse event able to catch the mouse click. So relative controller methods are called and all relative actions are performed in order to switch to the right view.
 
 Part of the individual contribution was then oriented to implement two scala classes that belong to the civil protection local model.
 The \texttt{AlertEntry} and \texttt{EnrolledTeamInfo} classes have been created to simplify insertion and values retrieval from the \textit{TableView} elements contained in the relative views. An \texttt{AlertEntry} element represents a table entry of the \texttt{HomeGrid}, because it's necessary to show the alert ID, the timestamp, latitude and longitude, the user and the district ID, the event name and the upvotes with a table representation. Similarly, the an \texttt{EnrollTeamInfo} element represents a table entry of the \texttt{ManageRescuesGrid}, because in this case it's necessary to show the team ID, name and phone number, if the team is available or not, the ID of the civil protection which occupied the team and the ID of the alert for which the team has been sent.
