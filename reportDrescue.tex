@@ -2,6 +2,8 @@
 \usepackage{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
+\usepackage[pdftex]{graphicx} 
+\graphicspath {{figures/}}
 
 \textwidth 6.3 in % Width of text line.
     \textheight 9.2 in
@@ -233,9 +235,56 @@ Civil protection - Civil protection communication:
 
 \chapter{Implementation}
 
-*) L'implementazione "esplode" il design, ma solo laddove pensiate che serva dire qualcosa
-
 \section{Samantha Bandini}
+In the DRescue project, Samantha Bandini contribution was mainly related to design and implementation of:
+\begin{itemize}
+\item Data Access Layer 
+\item Handle Exception DB-Server in collaboration with Anna Giulia Leoni and Elisa Casadio
+\item Handle MVC in civil protection in collaboration with Sofia Rosetti
+\end{itemize}
+
+\subsection{Data Access Layer}
+
+Our application must access a database, so it needed some logic to handle database access. In order to keep the code clean and modular, the database access logic is isolated into a separate module, in our project is included in package\\ \texttt{server/src/main/java/it/unibo/drescue/database}. This package contains:\\
+
+%TODO fix packages
+\texttt{DBConnection.java} and \texttt{DBConnectionImpl.java}: Respectively the interface and the class used to model the access method to DB and its tables.\\
+It uses two static factory method instead of constructor, this methods, \\ \texttt{getRemoteConnection()} and \texttt{getLocalConnection()}, are static methods that returns an instance of the class with some specific settings for environment, like address, username and password used to connect to DB. One advantage of this pattern is that in this way it has name, in this case it was useful for specifying the criteria to choose the connection (local or remote).\\
+As specified in previous chapters the DAO pattern was used for Data Access Layer. Since the DBConnectionImpl class is the one that keeps the general information about the database, information about DB tables are also maintained here, like its relative DAO. Here is maintained the enum with all table's name and the method \texttt{GenericDaoAbstract getDAO(final Table table)} which is a factory that returns the Dao relative to that table.\\
+
+And the packages:\\
+
+\texttt{dao}: It contains all DAO with their interfaces as specified in detailed design chapter.\\
+%TODO fix: add link
+\includegraphics[width=\textwidth]{figures/ClassDiagram.jpg}
+The DAOs are organized as specified in the partial class diagram above. Inheritance and template methods are used to group similar DAOs. The three main DAO's are GenericDao, LoggableDao, UpdatableDao. The GenericDao is the main class from which all others DAO extends, it contains the template methods insert, delete, selectByIdentifier, insertAndGet with abstract methods to be implemented in the classes that extend it.
+
+The UpdatableDao contains the template method update, the LoggableDao contains the template method login and the abstract methods are:
+\begin{itemize}
+\item \texttt{String getQuery(final QueryType queryType)} Given a query type it returns the prepared query (a composed string) for this object
+\item \texttt{PreparedStatement fillStatement(final ObjectModel objectModel, \\final PreparedStatement statement, final QueryType queryType)}: Given an object and a prepared statement it returns that prepared statement filled with the useful information to execute the specified query
+\item \texttt{ObjectModel mapRecordToModel(ResultSet resultSet)} Get an object from a resultSet given, obtained from a select query by identifier
+\end{itemize}
+
+An example of a particular DAO is CpEnrollment, its method \\
+\texttt{List<RescueTeam> findAllRescueTeamGivenACp(String cpID, boolean related)} has the parameter \textit{related} that is the criteria used to choose the query, since for the CpEnrollment we need both methods \texttt{findAllRescueTeamRelatedToACp} and \\
+\texttt{findAllRescueTeamNotRelatedToACp}, with both returning a list of RescueTeam objects that differs only for the query. \\
+%TODO check
+
+\texttt{helper}: It contains the class DBInitializationStart used to initialize DB with static tables contents and some other data contained in externals file, to have something to start with.
+The externals file are located in \textit{server/res}. The DBinitialization interface has a method used to insert into DB all objects listed in a json file, with a parameter \textit{table} that indicates the criteria, so in which table it has to be inserted, and the \textit{pathFile} that indicates the path where the file with objects is located.
+
+To initialize the DB in this way, it was created in utils-java module, in package \texttt{src/main/java/it/unibo/drescue/database} a class \texttt{JsonFileUtils.java} with the generic method \texttt{<T> List<T> getListFromJsonFile(final String path, \\final Class<T[]> type)} that get a generic list of objects from a json file indicating the path of the file and the type of the class of the object to get.
+
+\subsubsection{Travis configuration for mysql}
+Tests that cover the database part must be run locally, so that they do not act on the remote database that is being used by the real application, but on a copy of this in local environment.
+To do this, we had to prepare a .sql document to initialize all db tables and each of us, on a machine where SQL Server and SQL Workbench were installed, ran this file locally.
+The problem came up when these tests had to be run in Travis. In addition to add the mysql service to the .travis.yml file, it was necessary to configure the credentials for Travis like in our local environment and also to create the DB with all tables. \\\
+These rows has been added to .travis.yml file:\\
+\texttt{before}\textunderscore\texttt{install:}\\
+\texttt{- mysql -u root --password="" < travis.sql}
+\\where travis.sql is a file .sql that contains all configuration specified above.
+
 \section{Elisa Casadio}
 The developed part mainly concerns the total or partial definition, design and development of the Android application and the server.
 
