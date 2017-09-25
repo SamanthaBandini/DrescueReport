@@ -237,6 +237,44 @@ Civil protection - Civil protection communication:
 
 \section{Samantha Bandini}
 \section{Elisa Casadio}
+The developed part mainly concerns the total or partial definition, design and development of the Android application and the server.
+
+\subsection{Android application}
+\subsubsection{GPS}
+GPS is a very important component within the application, as it is useful to indicate the exact location from which a user's alert was sent and also to display all the alerts in the area where the user is located.
+
+So, it was necessary to check that the application had permissions to access the GPS. This operation was necessary because the GPS is a sensitive data and it need to have the explicit consent of the user to be able to use it. Also, it was necessary to check that the device had the GPS activated, because otherwise it would not be possible to understand where the user was and the latitude and longitude values could not be obtained.
+
+The package \texttt{gps} inside \texttt{mobileuser} module contains an activity has been defined in which the required permissions and presence of the GPS provider are checked during creation and resume of activity. It also provides the latitude and longitude values, but if they aren't available it is setted a specific message. Using the \emph{observer} pattern, it is possible to notify the activity when the latitude and longitude values change or when the provider is disabled.
+
+This activity is extended by all those activities that need to use the GPS, so that it can have the location values or check the provider.
+
+\subsubsection{Layouts and Activities}
+Four activities have been implemented with the relevant layouts to allow the user to send a new report, view the profile, change their password and the home page of application.
+
+\begin{itemize}
+\item \texttt{NewAlertActivity} in the package \texttt{alert} of the \texttt{mobileuser} module is the main feature that the application has, because it must allow the user to report a natural disaster. The class extends the GPS activity as it needs to know the latitude and longitude values to show them to the user and comunicate it to the server. In the layout, in addition to GPS values, it is given to user the possibility to select the type of natural disaster that occurs, by choosing between those in the database. The list of possible natural disasters is downloaded only whenever the user logs in so as not to slow down the operation and is saved between shared preferences of device.
+\item \texttt{ProfileActivity} in the package \texttt{profile} of the \texttt{mobileuser} module shows the user data. The data are downloaded when the user logs in and they are saved in the shared preferences of the device. Each field is set by taking the value saved in the shared preferences that has a certain key. The keys that can be used are listed in the \texttt{PreferencesKey} enum in the package \texttt{utils}. From this activity is possible to reach the activity for change the profile password and do logout. The logout is very simple, just delete all the data saved in the shared preferences.
+\item \texttt{ChangePasswordActivity} in the package \texttt{profile} of the \texttt{mobileuser} module allows the user to change his password. So, it is necessary to take the old and the new password, the user email and update his record on database. The layout shows three fields where the user can write. Each field must comply with two rules: the password must be at least 6 characters long and it must contain only alphanumeric characters.
+\item \texttt{MainActivity} in \texttt{mobileuser} module shows a RecyclerView where the CardView are arranged in a grid. Each CardView contains a title, an icon and a string with the class name that must start at the click of the CardView. The titles, the icons and the strings are listed in \texttt{arrays.xml} in \texttt{res} folder in the form of array. In order to handle the RecyclerView, it was need to use the \emph{Observer} pattern, the \emph{Adapter} pattern and the \emph{ViewHolder} pattern. Using the \emph{Observer} pattern, it was possible to notify when the user click on a specific CardView and to open the relative activity. The \emph{ViewHolder} pattern has allowed to set the correct fields of each CardView and the \emph{adapter} pattern has been the bridge between activity and the ViewHolder. \texttt{MainActivity}, during its creation or its resume, controls that the shared preferences are not empty. If this is not the case, it means that the user has logged out, so it need to go back to \texttt{SplashActivity} where the user can log in again.
+\end{itemize}
+
+\subsubsection{Connection between authentication and profile activities and server}
+After performing all the layouts and basic activity operations, the connection between the activities and the server was added using the classes contained in the \texttt{connection} package of the \texttt{mobileuser} module.
+
+The deployed connection is about authentication and profile activities. In all these cases, the type of communication is RPC, so all requests were made using \texttt{RabbitAsyncTask} class. The responses are \texttt{AbstractResponse}, so they were handled differently depending on what was needed to get. For more detailed explanation about \texttt{RabbitAsyncTask} and \texttt{AbstractResponse} see the dedicated section of developer Anna Giulia Leoni.
+
+First, it was necessary to create a message to be sent to the server in order to forward the request, then check the presence of the Internet connection (both through mobile and Wi-Fi connecition). This check was essential because forwarding a request without connection could cause an application crash. Also, being necessary to recive a response from the server, it has entered a progress dialog that blocks the user's activity until the application receives any response from the server.
+
+\begin{itemize}
+\item \texttt{SignUpActivity} in package \texttt{authentication} was implemented by Anna Giulia Leoni and refactored by Elisa Casadio. The request message consists of all the data that the user has entered during the registration. The response message consists in a simple successful message, which confirm the database registration.
+\item \texttt{LoginActivity} in package \texttt{authentication} has the request message assembled by the credentials of user. The response message consists in a message with the user data and a list of natural disaster. All this data are saved in shared preferences to use them in future in some requests or in the application. It has preferred to have all essential information at the user login, because it has avoided slowing down the user when displaying some views, such as profile or new alert.
+\item \texttt{ChangePasswordActivity} in package \texttt{profile} has the request message assembled by the new and old password and the user email, the latter derived from shared preferences. The response message is a successful message, which confirm the update of password.
+\end{itemize}
+
+\subsubsection{Graphics}
+To get a user-friendly application, the graphics were helpful. First, the basic colors that would have featured the application were choosen. Tones on green and yellow were chosen so that application could recall nature. Colors are listed within \texttt{colors.xml} so they can be used by all layouts. To have a minor repetition of the code, xml tags have been redefined within \texttt{styles.xml}, while \texttt{strings.xml} and \texttt{dimens.xml} have all the strings shown in the view and all the dimensions of the components used. Finally, the material icons were selected for use within the application.
+
 \section{Martina Giovanelli}
 \section{Anna Giulia Leoni}
 
