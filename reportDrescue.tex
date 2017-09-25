@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage[pdftex]{graphicx} 
+\usepackage{listings}
 \graphicspath {{figures/}}
 
 \textwidth 6.3 in % Width of text line.
@@ -151,9 +152,27 @@ The pattern has these advantages:
 A better pattern is Repository, it uses a metaphor of a Collection. This metaphor gives the pattern a tight contract and make it easier to understand.\\
 In addition in this case, inheritance, abstract classes, and template methods are used to avoid duplicate code since all models need some common methods, this will be discussed in the next chapter.
 So we have a GenericDAO, with the basic methods, from which all other DAOs extends.
-In the example X.X we see the GenericDao with methods insert, delete, selectByIdentifier and insertAndGet.
-\\{insert example x.x - screen1 or code of screen1}\\
-The \textit{insert} and \textit{delete} methods look identical to the methods of the simple DAO's, but the \textit{selectByIdentifier} method differs to the standard DAO’s \textit{findById} method by taking an ObjectModel object rather than the identifier (ObjectModel identifier). 
+In the following code segment is shown the GenericDao with methods insert, delete, selectByIdentifier and insertAndGet.\\
+\begin{lstlisting}
+public interface GenericDao {
+
+    void insert(ObjectModel objectModel) 
+    	throws DBDuplicatedRecordException, DBQueryException;
+
+    void delete(ObjectModel objectModel) 
+    	throws DBNotFoundRecordException, DBQueryException;
+
+    ObjectModel selectByIdentifier(ObjectModel objectModel);
+
+    ObjectModel insertAndGet(ObjectModel objectModel)
+            throws DBQueryException, 
+            		DBDuplicatedRecordException, 
+            		DBNotFoundRecordException;
+}
+
+\end{lstlisting}
+
+The \textit{insert} and \textit{delete} methods look identical to the methods of the simple DAO's, but the \textit{selectByIdentifier} method differs to the standard DAO’s \textit{findById} method by taking an ObjectModel object rather than the object identifier. 
 Making this change you avoid to expose the type of ObjectModel identity to the interface.
 
 In our case Repository pattern is realized with DAO.
@@ -188,6 +207,7 @@ Screenshot + descrizione moduli
 \item Singleton: utilizzato per il coordinator
 \item View-Holder: utilizzato per gli adapter Android
 \item Static factory: utilizzato per la creazione della connessione al database
+\item Factory pattern: utilizzato per recuperare i dao delle relative tabelle del database
 \item Observer: utilizzato per gestire l'aggiornamento delle view a seguito di cambiamenti del model
 \end{itemize}
 
