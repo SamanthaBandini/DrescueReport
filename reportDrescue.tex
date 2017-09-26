@@ -332,7 +332,7 @@ Our application must access a database, so it needed some logic to handle databa
 
 %TODO fix packages
 \texttt{DBConnection.java} and \texttt{DBConnectionImpl.java}: Respectively the interface and the class used to model the access method to DB and its tables.\\
-It uses two static factory method instead of constructor, this methods, \\ \texttt{getRemoteConnection()} and \texttt{getLocalConnection()}, are static methods that returns an instance of the class with some specific settings for environment, like address, username and password used to connect to DB. One advantage of this pattern is that in this way it has name, in this case it was useful for specifying the criteria to choose the connection (local or remote).\\
+It uses two static factory method instead of constructor, these methods, \\ \texttt{getRemoteConnection()} and \texttt{getLocalConnection()}, are static methods that returns an instance of the class with some specific settings for environment, like address, username and password used to connect to DB. One advantage of this pattern is that in this way it has name, in this case it was useful for specifying the criteria to choose the connection (local or remote).\\
 As specified in previous chapters the DAO pattern was used for Data Access Layer. Since the DBConnectionImpl class is the one that keeps the general information about the database, information about DB tables are also maintained here, like its relative DAO. Here is maintained the enum with all table's name and the method \texttt{GenericDaoAbstract getDAO(final Table table)} which is a factory that returns the Dao relative to that table.\\
 
 And the packages:\\
@@ -340,8 +340,7 @@ And the packages:\\
 \texttt{dao}: It contains all DAO with their interfaces as specified in detailed design chapter.\\
 %TODO fix: add link
 \includegraphics[width=\textwidth]{figures/ClassDiagram.jpg}
-The DAOs are organized as specified in the partial class diagram above. Inheritance and template methods are used to group similar DAOs. The three main DAO's are GenericDao, LoggableDao, UpdatableDao. The GenericDao is the main class from which all others DAO extends, it contains the template methods insert, delete, selectByIdentifier, insertAndGet with abstract methods to be implemented in the classes that extend it.
-
+The DAOs are organized as specified in the partial class diagram above. Inheritance and template methods are used to group similar DAOs. The three main DAO's are GenericDao, LoggableDao, UpdatableDao. The GenericDao is the main class from which all others DAO extends, it contains the template methods insert, delete, selectByIdentifier, insertAndGet with abstract methods to be implemented in the classes that extend it.\\
 The UpdatableDao contains the template method update, the LoggableDao contains the template method login and the abstract methods are:
 \begin{itemize}
 \item \texttt{String getQuery(final QueryType queryType)} Given a query type it returns the prepared query (a composed string) for this object
@@ -352,6 +351,8 @@ The UpdatableDao contains the template method update, the LoggableDao contains t
 An example of a particular DAO is CpEnrollment, its method \\
 \texttt{List<RescueTeam> findAllRescueTeamGivenACp(String cpID, boolean related)} has the parameter \textit{related} that is the criteria used to choose the query, since for the CpEnrollment we need both methods \texttt{findAllRescueTeamRelatedToACp} and \\
 \texttt{findAllRescueTeamNotRelatedToACp}, with both returning a list of RescueTeam objects that differs only for the query. \\
+Every DAO concrete class has been tested trying to isolate single pieces of the code. Following in broad terms the Test-Driven-Development, JUnit simple test classes have been written before each DAO class, and, in order to respect design principle also in test classes, these classes have been refactored. They can be found under the\\ \texttt{server/src/test/java/it/unibo/drescue/database} package.\\
+
 %TODO check
 
 \texttt{helper}: It contains the class DBInitializationStart used to initialize DB with static tables contents and some other data contained in externals file, to have something to start with.
