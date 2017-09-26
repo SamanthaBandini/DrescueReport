@@ -4,6 +4,8 @@
 \usepackage[english]{babel}
 \usepackage[pdftex]{graphicx} 
 \usepackage{listings}
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{3}
 \graphicspath {{figures/}}
 
 \textwidth 6.3 in % Width of text line.
@@ -178,24 +180,19 @@ The pattern has these advantages:
 \end{itemize}
 
 A better pattern is Repository, it uses a metaphor of a Collection. This metaphor gives the pattern a tight contract and make it easier to understand.\\
-In addition in this case, inheritance, abstract classes, and template methods are used to avoid duplicate code since all models need some common methods, this will be discussed in the next chapter.
+In addition in this case, inheritance, abstract classes, and template methods are used to avoid duplicate code since all models need some common methods, this will be discussed in the next chapters.
 So we have a GenericDAO, with the basic methods, from which all other DAOs extends.
-In the following code segment is shown the GenericDao with methods insert, delete, selectByIdentifier and insertAndGet.\\
+In the following code segment is shown how a GenericDao is composed.\\
 \begin{lstlisting}
 public interface GenericDao {
 
-    void insert(ObjectModel objectModel) 
-    	throws DBDuplicatedRecordException, DBQueryException;
+    void insert(ObjectModel objectModel);
 
-    void delete(ObjectModel objectModel) 
-    	throws DBNotFoundRecordException, DBQueryException;
+    void delete(ObjectModel objectModel);
 
     ObjectModel selectByIdentifier(ObjectModel objectModel);
-
-    ObjectModel insertAndGet(ObjectModel objectModel)
-            throws DBQueryException, 
-            		DBDuplicatedRecordException, 
-            		DBNotFoundRecordException;
+	
+	...
 }
 
 \end{lstlisting}
@@ -348,6 +345,7 @@ In the DRescue project, Samantha Bandini contribution was mainly related to desi
 
 Our application must access a database, so it needed some logic to handle database access. In order to keep the code clean and modular, the database access logic is isolated into a separate module, in our project is included in package\\ \texttt{server/src/main/java/it/unibo/drescue/database}. This package contains:\\
 
+\subsubsection{DB connection classes}
 %TODO fix packages
 \texttt{DBConnection.java} and \texttt{DBConnectionImpl.java}: Respectively the interface and the class used to model the access method to DB and its tables.\\
 It uses two static factory method instead of constructor, these methods, \\ \texttt{getRemoteConnection()} and \texttt{getLocalConnection()}, are static methods that returns an instance of the class with some specific settings for environment, like address, username and password used to connect to DB. One advantage of this pattern is that in this way it has name, in this case it was useful for specifying the criteria to choose the connection (local or remote).\\
@@ -355,6 +353,7 @@ As specified in previous chapters the DAO pattern was used for Data Access Layer
 
 And the packages:\\
 
+\subsubsection{DAO classes}
 \texttt{dao}: It contains all DAO with their interfaces as specified in detailed design chapter.\\
 %TODO fix: add link
 \includegraphics[width=\textwidth]{figures/ClassDiagram.jpg}
@@ -372,7 +371,7 @@ An example of a particular DAO is CpEnrollment, its method \\
 Every DAO concrete class has been tested trying to isolate single pieces of the code. Following in broad terms the Test-Driven-Development, JUnit simple test classes have been written before each DAO class, and, in order to respect design principle also in test classes, these classes have been refactored. They can be found under the\\ \texttt{server/src/test/java/it/unibo/drescue/database} package.\\
 
 %TODO check
-
+\subsubsection{DB initialization classes}
 \texttt{helper}: It contains the class DBInitializationStart used to initialize DB with static tables contents and some other data contained in externals file, to have something to start with.
 The externals file are located in \textit{server/res}. The DBinitialization interface has a method used to insert into DB all objects listed in a json file, with a parameter \textit{table} that indicates the criteria, so in which table it has to be inserted, and the \textit{pathFile} that indicates the path where the file with objects is located.
 
@@ -553,7 +552,7 @@ These two classes are also used in the \texttt{CivilProtectionData} class, which
 
 \section{Common parts}
 %TODO Common part
-Depending on the needs encountered during the implementation messages wew created by each of us with its tests.
+Depending on the needs encountered during the implementation, messages were created by each of us with its tests.
 
 \subsection{Samantha Bandini - Sofia Rosetti}
 
