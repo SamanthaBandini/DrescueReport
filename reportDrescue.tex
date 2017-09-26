@@ -216,9 +216,20 @@ A message producer produces messages and send them to the Message Broker which
 routes messages to the right consumers. A message consumer await the upcoming messages, then process the information in them.
 
 \subsection{Point-to-Point}
-Point-to-Point communication has been used for client-server communication where more clients can potentially send messages to a queue on which a server consumer of a specific service is waiting for messages.
-When the server receive a request that doesn't need a reply message has to forward the request as a new message to the right queue on which another client is listening.
-%TODO
+Point-to-Point communication has been used in communicating with the server where more clients can potentially send messages to a queue on which a server consumer of a specific service is waiting for messages.
+\\When the server receives a message it is processed and the result can be 
+\begin{itemize}
+\item sent as a response 
+\begin{figure}[ht]
+\centering
+\includegraphics{figures/RPC.jpg}
+\end{figure}
+\item forwarded to another client
+\begin{figure}[ht]
+\centering
+\includegraphics{figures/forward.jpg}
+\end{figure}
+\end{itemize}
 
 \subsection{Publish/Subscribe}
 Publish/Subscribe communication has been used to send a message to multiple clients with consumer consuming on the same queue. 
@@ -229,6 +240,10 @@ A message goes to the queue(s) whose binding key exactly matches the routing key
 Subscribers needs to bind to the exchange in order to receive messages.
 This is used when a civil protection notice all the other civil protecions about the availability of a specific rescue team.
 
+\begin{figure}[ht]
+\centering
+\includegraphics{figures/ps.jpg}
+\end{figure}
 
 \chapter{Detail design}
 %TODO
@@ -265,8 +280,11 @@ Screenshot + descrizione moduli
 Diagrammi di sequenza per RPC e forward + comunicazione tra CP
 3 tabelle (mobile, alert, civilprotection)
 
-%TODO
-Diagramma delle classi dei messaggi
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.5]{figures/messages.png}
+\caption{Base messages structure}
+\end{figure}
 
 Mobile user - server communication:
 
