@@ -444,7 +444,6 @@ Services that can handle both response and forward extends \texttt{ServiceRespon
 \\More specifically if the \textit{properties.getReplyTo} content is a valid string then represents the name of the queue to which send the response message returned from \textit{accessDB} method. Otherwise the result of the \textit{accessDB} method is a \texttt{FrowardObjectMessage} containing the ObjectModel to forward and the queues name to which forward it.
 \\This behaviour is tested using inside \texttt{TestClientServerCommunication} class in \texttt{test} folder of package \texttt{connection}.
 \\
-%TODO diamond inheritance pic?
 
 \subsubsection{AlertsService}
 Case class \texttt{AlertsService} in package \texttt{connection} extends \texttt{ServiceResponseOrForward} and manages messages requests related to alerts both from mobileuser and civil protection. More specifically these messages are shown in the detail design section.
@@ -463,10 +462,8 @@ Activities have been implemented with the related layouts to allow the user to s
 \item \texttt{SplashActivity} represents the splash screen of the app where the user can select to sign up or login
 \item \texttt{SignUpActivity} and \texttt{LoginActivity} in package \texttt{authentication} represent respectivly the activity that contains the fields that the user must fill to sign up and login. Some checks are made on the validity of the email address and the match between password and confirm password at sign up.
 \item \texttt{UpvoteAlertActivity} in package \texttt{alert} represents the activity that contains a list of existing alerts that the user can upvote to increase their reliability. It extends \texttt{GpsActivityImpl} because latitude and longitude of the user are needed to correctly download alerts of its district. \\
-The alert list is presented within the app using Adapter and ListView. The \texttt{Alert Adapter} allows access to data and creates the corresponding view based on the layout provided for each alert of the given list. Inside the Adapter the ViewHolder pattern has been used to limit the number of calls to \textit{findViewbyId} method. This ways, this methods is invoked once for every items of the list passed at constructor and references to layout elements are stored in an \texttt{AlertViewHolder} instance associated with convertView with \textit{View.setTag} to be used for next items.
+The alert list is presented within the app using Adapter and ListView. The \texttt{Alert Adapter} allows access to data and creates the corresponding view based on the layout provided for each alert of the given list. Inside the Adapter the ViewHolder pattern has been used to limit the number of calls to \textit{findViewbyId} method. This ways, this methods is invoked once for each item of the list passed at constructor and references to layout elements are stored in an \texttt{AlertViewHolder} instance associated with convertView with \textit{View.setTag} to be used for next items.
 \end{itemize}
-
-%TODO digramma classi?
 
 \subsubsection{Connection to server}
 The package \texttt{connection} contains the classes used to communicate to the server and eventually parse the response.
@@ -480,14 +477,16 @@ More specifically two AsynkTask were created:
 The connection to the server was added into the activities of package \texttt{alert} using the above classes. Before sending the message to the server it is always checked that the device is connected to the netword and, if needed, if latitude and longitude values are correct. More specifically
 \begin{itemize}
  \item in \texttt{NewAlertActivity} a \texttt{NewAlertMessage} containing the alert data is created, sent and the result of the sending is shown to the user.
- \item in \texttt{UpvoteAlertActivity} a \texttt{RequestUpvoteAlertMessage} containing the upvote data is created, sent and the result is shows as above; a \texttt{RequestAlertsMessage} containing user position is sent through RPC and on receiving the alert list of his district the adapter must be notified. If timeout is reached or an error occurr an error message is shown.
- 
+ \item in \texttt{UpvoteAlertActivity} a \texttt{RequestUpvoteAlertMessage} containing the upvote data is created, sent and the result is shows as above; a \texttt{RequestAlertsMessage} containing user position is sent through RPC and on receiving the alert list of his district the adapter must be notified. If timeout is reached or an error occurr an error message is shown. 
 \end{itemize}
 
 \subsection{Civil Protection application}
 
-\subsubsection{RescueTeamConsumer}
-%TODO
+All the code referred into this section is located into module \texttt{civilprotection}.
+
+The developed part is strictly connected to request and response messages exchanged between civil protections in order to obtain information about the condition of their rescue teams.
+\\These messages are \texttt{ReqRescueTeamConditionMessage} and \texttt{ReplyRescueTeamCondition\\Message}; their reception is handled inside \texttt{RescueTeamConsumer}. More specifically on receiving the first message the civil protection reply with the second one, setting as condition the one stored in \textit{EnrolledTeamInfo} local model for the specific rescue team; on receiving the second one the civil protection update its local model with the condition received.
+A message to request enrolled rescue teams conditions is also sent at login and on enrolling a new team.
 
 \section{Sofia Rosetti}
 In the DRescue project, Sofia Rosetti contribution was mainly related to design and implementation of:
@@ -548,7 +547,7 @@ These two classes are also used in the \texttt{CivilProtectionData} class, which
 
 \section{Common parts}
 %TODO Common part
-I messaggi sono stati implementati a seconda delle necessità facendo per ognuno i test.
+Depending on the needs encountered during the implementation messages wew created by each of us with its tests.
 
 \subsection{Samantha Bandini - Sofia Rosetti}
 
@@ -583,7 +582,14 @@ In the same way, \texttt{civilprotection/src/main/scala/it/unibo/drescue/localMo
 AlertConsumer (è un consumer di RabbitMQ che rimane in attesa su una coda per ricevere i messaggi di ForwardAlertMessage e ForwardUpvotedAlertMessage; quando arrivano provvede all'aggiornamento del model) e RequestHandler (serve per far partire una future che ritorna un risultato che è la risposta che deve essere interpretata dal controller in quanto è un messaggio codificato tramite formato JSON)
 
 \subsection{Samantha Bandini - Elisa Casadio - Anna Giulia Leoni}
-Eccezioni
+It was decided to handle database exception because to different exceptions corresponds different actions server side. All the database exceptions can be found in package \texttt{database/\\exceptions} of module \texttt{server/java}. More specifically
+\begin{itemize}
+\item a \texttt{DBConnectionException} is thrown if an error occurr while establishing or closing connection to database, or when asking to access a non-existing table.
+\item a \texttt{DBQueryException} is thrown if an error occurr while executing a query.
+\item a \texttt{DBDuplicatedRecordException} is thrown while inserting an object into database, when an equal object (with the same identifier) was found in database.
+\item a \texttt{DBNotFoundRecordException} is thrown while searching an object into db, when an equal object (with the same identifier) was not found in database.
+\end{itemize}
+Sometimes when the last two occur, the error is notified to the client, otherwise it is only logged.
 
 \subsection{Elisa Casadio - Anna Giulia Leoni}
 \subsubsection{Server structure}
@@ -591,9 +597,9 @@ The code executed on server is located inside the \texttt{connection} package in
 
 \begin{itemize}
 \item \texttt{ServerMain} represents the main class of the module, contains the code to setup the connection to RabbitMQ broker and runs all the services.
-\item \texttt{Service} is a case class that represents a generic service. A new channel is created on the given connection and a new \texttt{ServerConsumer} is added to the channel and consume on the given queue.
+\item \texttt{Service} is a case class that represents a generic service. A new channel is created on the given connection and a new \texttt{ServerConsumer} is added to the channel to consume on the given queue.
 \item \texttt{ServerConsumer} is a simple server-side consumer extending the default RabbitMQ consumer and overriding the \emph{handleDelivery} method called when consuming a message. Furthermore, a class implementing \texttt{ServerOperation} trait must be passed to the consumer in order to access database and handle potentially the returning result. In case of \emph{accessDB} method throw an exception, the error is logged, otherwise the result is handled. 
-\item \texttt{ServiceOperation} is a trait modelling a general service to access database and handle the result. This trais is implemented by all classes that represent the specific services. The \emph{accessDB} method is where concreate access is using the data access object.
+\item \texttt{ServiceOperation} is a trait modelling a general service to access database and handle the result. This trait is implemented by all classes that represent the specific services. The \emph{accessDB} method is where concreate access to database is using the Data Access Object.
 \end{itemize}
 
 \subsubsection{Server configuration}
