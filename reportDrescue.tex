@@ -203,6 +203,7 @@ Making this change you avoid to expose the type of ObjectModel identity to the i
 
 In our case Repository pattern is realized with DAO.
 \section{RabbitMQ MOM}
+
 It was decided to adopt the Message-Oriented Middleware(MOM) RabbitMQ for the following reasons
 \begin{itemize}
 \item \textbf{Decoupling}: messages can be exchanged between system components which have been placed on the same or different network.
@@ -242,6 +243,12 @@ This is used when a civil protection notice all the other civil protecions about
 \centering
 \includegraphics{figures/ps.jpg}
 \end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics{figures/system.png}
+\end{figure}
+
 
 \chapter{Detail design}
 %TODO
@@ -325,8 +332,11 @@ Civil protection - Civil protection communication:
 \begin{tabular}{ |p{4cm}|p{4cm}|p{4cm}|p{2cm}| } \hline
 Service 			& Request message 	& Response message		& Type 	\\
 \hline
-Login	& CpLoginMessage(cpID, password)	& RescueTeamsMessage (List$<$RescueTeamImpl$>$) 	& RPC	\\ 
-Get alerts CP	& RequestCpAlertsMes sage(cpID,password)	& AlertsMessage (List$<$AlertImpl$>$) 	& RPC	\\ 
+Get Rescue Team Condition	& ReqRescueTeam ConditionMessage(RescueTeamID)	& ReplyRescueTeam ConditionMessage(RescueTeamID, RescueTeamCondition) 	& p/s	\\ 
+Update Rescue Team Condition	&  ReplyRescueTeam ConditionMessage(RescueTeamID, RescueTeamCondition) 	& 	& p/s	\\ 
+Coordination	&  ReqCoordinationMessa ge(RescueTeamID, reqTimestamp) 	& ReplyCoordinationMes
+sage(RescueTeamID, rescueTeamCondition)	& p/s	\\
+Coordination	&  ReplyCoordinationMessa ge(RescueTeamID, rescueTeamCondition) 	& 	& p/s	\\
 \hline
 \end{tabular}
 \end{center}
@@ -429,6 +439,38 @@ To get a user-friendly application, the graphics were helpful. First, the basic 
 \subsubsection{MobileuserService}
 
 \section{Martina Giovanelli}
+In the DRescue project, Martina Giovanelli contribution was mainly related to design and implementation of communication between civil protections by way of the exchange of JSON messages.
+\subsection{Communication between civil protections}
+Every civil protection maintain the condition of the rescue teams it has enrolled in in his local memory. 
+When the civil protection receives a new alert it must communicate with each others in order to decide which rescue team send to solve the occured natural disaster reported by the users.\\
+The rescue teams are shared among the different civil protections so, before select one, they must coordinate with others to recover the picked team status and update their local variable.\\
+The messages \texttt{ReplyRescueTeamConditionMessage} and\\ \texttt{ReqRescueTeamConditionMessage} inside \texttt{civilprotection} module are exchanged between the different civil protection respectively to request and send the condition of a particular rescue team.
+
+For communication between civil protection we decided to use \textbf{ Ricart-Agrawala's algorithm}, a classical mission exclusion algorithm for distributive systems, to manage the rescue teams' condition .\\
+Communication between processes is based on the following assumptions:
+\begin{itemize}
+\item Processes communicate by reading and writing variables through the exchange of messages.
+\item The delay of sending a message is unpredictable but finished.
+\item The channel be reliable. A sent message is received correctly from its recipient, furthermore, there are no duplications or spurious messages (received but never transmitted). 
+\item The process do not fail. 
+\end{itemize}
+
+The class \texttt{CoordinatorImpl} and the respective interface \texttt{Coordinator} inside the package \texttt{civilprotection/src/main/java/it/unibo/drescue/utils} are a singleton used for the implementation of the above algorithm.\\
+In particolar this class keeps the process status in relation to the critical section: \texttt{wanted}, \texttt{held} and \texttt{detached}.\\
+The condition of the coordinator is equal to \texttt{wanted} when the civil protection wants to enter into critical section and updated the status of one  its rescue team. 
+In this case the coordinator also maintains the timestamp of the request, the list ID of the civil protection from which the process expect an replay message and the critical section's name which corresponds exactly to the name of the rescue team.\\
+The coordinator's condition is equal to \texttt{held} when the process is into critical section and \texttt{detached} when the civil protection isn't interested to occupied one team.\\
+The coordinator keep the civil protection's condition for only one critical section.\\
+In detail, for the implementation of this algorithm two other message have been used:
+\texttt{ReqCoordinationMessage} and \texttt{ReplyCoordinationMessage}.  
+
+\subsection{Rescues management}
+Individual contribution in civil protection Model-View-Controller was mainly concerned the management of the rescue team into \texttt{ManageRescuesControllerImpl} class and the handle of the  messages received from other civil protection.\\
+When the civil protection wants to occupied a rescue team it sends a  broadcast message to other civil protections that has enrolled in the same rescue team in order to received their local condition.
+it waits until it received all the reply message or received a reply that inform it that the rescue team is already occupied.
+In the first case the civil protection can occupied the rescue team in the other it must choose another team.\\
+When civil protection wants to stopped the rescue team it update its local  condition from occupied to available and send a message to other civil protection to inform them about the updated team status.\\
+
 \section{Anna Giulia Leoni}
 
 The developed part mainly concerns the development of the Server application and the Android one, but also  a little part in the Civil Protection application.
