@@ -556,13 +556,9 @@ Depending on the needs encountered during the implementation, messages were crea
 
 \subsection{Samantha Bandini - Sofia Rosetti}
 
-\subsubsection{MVC (focus home e login)}
+\subsubsection{MVC package organization}
 
-It has been necessary to realize an application oriented to the data management %TODO
-
-It has been necessary to handle civil protection datas 
-
-E' stato necessario effettuare una gestione orientata alla gestione dei dati relativi alla protezione civile che sta utilizzando l'applicativo.\\
+Civil protection application has been realized in order to focus on the management of data relative to the specific civil protection that is using the system.\\
 
 Code has been organized as \texttt{civilprotection/src/main/scala/it/unibo/drescue/} package shows: 
 
@@ -575,18 +571,25 @@ Code has been organized as \texttt{civilprotection/src/main/scala/it/unibo/dresc
 Package localModel contains CivilProtectionData class, which represents the main local model to handle in each civil protection.
 
 
-\subsubsection{Model update management}
+\subsubsection{Handle model in civil protection module using pattern Observer)}
 
 The views' real-time update has been set up with Observer pattern. Each model change produces a notification and the view is updated through an ObservableBuffer.
 
 Observer pattern has been organized as following: the Observer trait is included in \texttt{civilprotection/src/main/scala/it/unibo/drescue/controller} package, as three minor controllers must implement it. This trait contains a \textit{onReceivingNotification()} method each observer class must implement in order to react to a notification.
 
-In the same way, \texttt{civilprotection/src/main/scala/it/unibo/drescue/localModel} package contains the Observable trait, which is implemented from the CivilProtectionData class in order to notify a change. This trait has an object representing an enumeration with which the right observer is notified. The \textit{addObserver()} method is used to associate an observer to an observable object, while the \textit{notifyObserver()} method is used to notify the right observer through the enumeration.
+In the same way, \texttt{civilprotection/src/main/scala/it/unibo/drescue/localModel} package contains the Observable trait, which is implemented by the CivilProtectionData class in order to notify a change. This trait has an object \textit{Observers} that represent an enumeration with which the right observer is notified. The \texttt{addObserver()} method is used to associate an observer to an observable object, while the \textit{notifyObserver()} method is used to notify the right observer through the enumeration.
 
-%TODO
-AlertConsumer (è un consumer di RabbitMQ che rimane in attesa su una coda per ricevere i messaggi di ForwardAlertMessage e ForwardUpvotedAlertMessage; quando arrivano provvede all'aggiornamento del model) e RequestHandler (serve per far partire una future che ritorna un risultato che è la risposta che deve essere interpretata dal controller in quanto è un messaggio codificato tramite formato JSON)
+\subsubsection{Handle communication from civil protection to server}
+%TODO fix
+La comunicazione client-server lato protezione civile è stata gestita per lo più dalle classi:\\
+
+\texttt{RequestHandler.scala} la quale fa partire una future che ritorna un risultato, il quale è la risposta che deve essere interpretata dal controller in quanto è un messaggio codificato tramite formato JSON.
+
+
+\texttt{AlertConsumer} è un consumer di RabbitMQ che rimane in attesa su una coda per ricevere i messaggi di ForwardAlertMessage e ForwardUpvotedAlertMessage; alla ricezione di questi messaggi provvede all'aggiornamento del model.\\
 
 \subsection{Samantha Bandini - Elisa Casadio - Anna Giulia Leoni}
+\subsubsection{Handle DB layer exeptions}
 It was decided to handle database exception because to different exceptions corresponds different actions server side. All the database exceptions can be found in package \texttt{database/\\exceptions} of module \texttt{server/java}. More specifically
 \begin{itemize}
 \item a \texttt{DBConnectionException} is thrown if an error occurr while establishing or closing connection to database, or when asking to access a non-existing table.
