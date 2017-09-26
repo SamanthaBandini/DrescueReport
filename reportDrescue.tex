@@ -87,12 +87,20 @@ Attenzione ai requirement non funzionali: 1) non siano troppo vaghi altrimenti s
 According to agile methodologies in the first sprint we wrote user cases like ``As.. I want.. For..", which have highlighted these functional requirements:
 
 \begin{itemize}
+\item \textbf{User side}:
+\begin{enumerate}
 \item A not logged user has to register or login to access the platform.
 \item A user needs to view last fifty alerts of his area, to see what happens nearby.
 \item A user needs to send an alert to inform civil protection about a particular event.
 \item A user needs to view his profile to check his register information.
 \item A user needs to change his password to update it.
 \item A user needs to confirm an alert (upvoting it) to increase the alert reliability.
+\end{enumerate}
+\end{itemize}
+
+\begin{itemize}
+\item \textbf{Civil protection side}:
+\begin{enumerate}
 \item A civil protection has to login to access the platform.
 \item A civil protection needs to receive alerts of its area to coordinate the rescues.
 \item A civil protection needs to visualize in action rescues to have a general view of rescues and occupied teams.
@@ -101,8 +109,15 @@ According to agile methodologies in the first sprint we wrote user cases like ``
 \item A civil protection needs to decide which team is the most appropriate to send (at discretion of the civil protection user).
 \item A civil protection needs to notify the sending of a team for a specific alert in order to intervene in case of emergency.
 \item A civil protection needs to notify the end of a rescue to inform other civil protections that the team is available again.
+\end{enumerate}
+\end{itemize}
+
+\begin{itemize}
+\item \textbf{Server side}:
+\begin{enumerate}
 \item The server has to forward the alerts and the upvotes to the civil protection of the area in order to warn it.
-\item The server has to interact with the database as for user and civil protection requests in order to save datas.
+\item The server has to interact with the database as for user and civil protection requests in order to save datas. 
+\end{enumerate}
 \end{itemize}
 
 \section{Non-functional requirements}
@@ -133,14 +148,25 @@ MySQL: deciso per compatibilità con le varie componenti utilizzate (più conosc
 Indecise con no sql poi scelto mysql perché db parecchio grande e per avere sicurezze di non incorrere in spese.
 
 \section{MVC Architecture}
-The MVC design pattern decouples these major components allowing for efficient code reuse and parallel development.
+As civil protection is a desktop application which consists of a relevant visual part, it has been handled using the Model-View-Controller pattern, that allows to decouple major components for efficient code reuse and parallel development.
+
+As shown in figure \ref{fig:MVC}, MVC has been arranged with a major controller that communicates with four minor controllers, each one relative to a single view.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{figures/MVC.png}
+\caption{MVC}
+\label{fig:MVC}
+\end{figure}
+
+%The MVC design pattern decouples these major components allowing for efficient code reuse and parallel development.
 %https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller
 
-Con MVC si è gestito il modulo civilprotection in quanto è un applicativo desktop che comprende anche una parte rilevante di visualizzazione grafica.\\
-E' stato necessario effettuare una gestione orientata alla gestione dei dati relativi alla protezione civile che sta utilizzando l'applicativo.\\
-Disegno (controller grande + piccoli)\\
-Il design MVC è stato gestito come in figura X.\\
-Ognuna delle 4 view è associata ad un controller minore, il quale ha il riferimento ad un controller principale che ha il compito di interagire col modello.
+%Con MVC si è gestito il modulo civilprotection in quanto è un applicativo desktop che comprende anche una parte rilevante di visualizzazione grafica.\\
+
+%Disegno (controller grande + piccoli)\\
+%Il design MVC è stato gestito come in figura X.\\
+%Ognuna delle 4 view è associata ad un controller minore, il quale ha il riferimento ad un controller principale che ha il compito di interagire col modello.
 
 
 \section{Data Access Object}
@@ -514,18 +540,34 @@ I messaggi sono stati implementati a seconda delle necessità facendo per ognuno
 \subsection{Samantha Bandini - Sofia Rosetti}
 
 \subsubsection{MVC (focus home e login)}
-Il codice è stato organizzato con una suddivisione in package (model vero in altro modulo, model locale in localmodel, controllers in controller e views in view).\\
-E' stato definito il model da passare al controller principale (CivilProtectionData).\\
-L'aggiornamento delle view è stato impostato utilizzando il pattern Observer. Ad ogni cambiamento del modello la relativa view viene notificata e attraverso un ObservableBuffer viene aggiornata.\\
+
+It has been necessary to realize an application oriented to the data management %TODO
+
+It has been necessary to handle civil protection datas 
+
+E' stato necessario effettuare una gestione orientata alla gestione dei dati relativi alla protezione civile che sta utilizzando l'applicativo.\\
+
+Code has been organized as \texttt{civilprotection/src/main/scala/it/unibo/drescue/} package shows: 
+
+\begin{itemize}
+\item \texttt{controller} package: contains all controller classes.
+\item \texttt{view} package: contains all views classes.
+\item \texttt{localModel} package: contains classes relative to the logged civil protection local model. Generic model classes (which must be used from other modules too) can be found under \texttt{utils-java/src/main/java/it/unibo/drescue/model} package.
+\end{itemize} 
+
+Package localModel contains CivilProtectionData class, which represents the main local model to handle in each civil protection.
 
 
 \subsubsection{Model update management}
+
+The views' real-time update has been set up with Observer pattern. Each model change produces a notification and the view is updated through an ObservableBuffer.
+
+Observer pattern has been organized as following: the Observer trait is included in \texttt{civilprotection/src/main/scala/it/unibo/drescue/controller} package, as three minor controllers must implement it. This trait contains a \textit{onReceivingNotification()} method each observer class must implement in order to react to a notification.
+
+In the same way, \texttt{civilprotection/src/main/scala/it/unibo/drescue/localModel} package contains the Observable trait, which is implemented from the CivilProtectionData class in order to notify a change. This trait has an object representing an enumeration with which the right observer is notified. The \textit{addObserver()} method is used to associate an observer to an observable object, while the \textit{notifyObserver()} method is used to notify the right observer through the enumeration.
+
+%TODO
 AlertConsumer (è un consumer di RabbitMQ che rimane in attesa su una coda per ricevere i messaggi di ForwardAlertMessage e ForwardUpvotedAlertMessage; quando arrivano provvede all'aggiornamento del model) e RequestHandler (serve per far partire una future che ritorna un risultato che è la risposta che deve essere interpretata dal controller in quanto è un messaggio codificato tramite formato JSON)
-
-
-
-
-
 
 \subsection{Samantha Bandini - Elisa Casadio - Anna Giulia Leoni}
 Eccezioni
