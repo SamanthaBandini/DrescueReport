@@ -461,7 +461,20 @@ First, it was necessary to create a message to be sent to the server in order to
 To get a user-friendly application, the graphics were helpful. First, the basic colors that would have featured the application were choosen. Tones on green and yellow were chosen so that application could recall nature. Colors are listed within \texttt{colors.xml} so they can be used by all layouts. To have a minor repetition of the code, xml tags have been redefined within \texttt{styles.xml}, while \texttt{strings.xml} and \texttt{dimens.xml} have all the strings shown in the view and all the dimensions of the components used. Finally, the material icons were selected for use within the application.
 
 \subsection{Server application}
+In this section, the service exposed is located in \texttt{server} module in \texttt{connection} package.
+
 \subsubsection{MobileuserService}
+\texttt{MobileuserService} is a case classe used to implement useful operations to access database when requests are made on \texttt{MOBILEUSER\_QUEUE}. This queue takes all the requests concerning authentication and profile management.
+
+The service decides what to do depending on the type of message. Possible message types accepted are:
+\begin{itemize}
+\item \texttt{SIGN\_UP\_MESSAGE} is the message sends when a user is registered into the mobile application. The user data are extracted from the request message and the user is inserted as a new record in the database. If the insert process is successful, \emph{SuccessfulMessage} is returned, otherwise, if an error occurs, it is captured. The email must be unique, so if it is duplicated, \emph{ErrorMessage} with a particular message is returned. This operations are implemented by developer Anna Giulia Leoni and refactored by developer Elisa Casadio.
+\item \texttt{LOGIN\_MESSAGE} is the message sends when a user try to login into the mobile application. The user email and password are extracted from the request message and the user is searched into the user table of database. If the user is found, \emph{ResponseLoginMessage} is sent with all user data and a list of natural disaster, otherwise \emph{ErrorMessage} is sent, because email or password is wrong. If an error occurs, it is captured.
+\item \texttt{CHANGE\_PASSWORD\_MESSAGE} is the message sends when a user wants change the password of his account. The user email, old password and new password are extracted from the request message. The user is searched into the user table of database, the old password send is compared with the real password and the user data are updated.
+\item \texttt{REQUEST\_PROFILE\_MESSAGE} is usefull to get the profile of user. It is implemented for a future functionality. The user email is extracted from message and the user is searched into the user table. If the user is present, \emph{ProfileMessage} is sent with all the user data.
+\end{itemize}
+
+This service is tested with \texttt{scalatest} in class \texttt{MobileuserServiceTest} in the \texttt{connec-\\tion} package. For each type of message, the connection with a local instance of database is opened and operations of insert or update are run. Each test checks if the message type is the type expected. At the end, the fake user is deleted and the connection with database is closed.
 
 \section{Martina Giovanelli}
 In the DRescue project, Martina Giovanelli contribution was mainly related to design and implementation of communication between civil protections by way of the exchange of JSON messages.
