@@ -4,6 +4,8 @@
 \usepackage[english]{babel}
 \usepackage[pdftex]{graphicx} 
 \usepackage{listings}
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{3}
 \graphicspath {{figures/}}
 
 \textwidth 6.3 in % Width of text line.
@@ -121,15 +123,13 @@ According to agile methodologies in the first sprint we wrote user cases like ``
 \end{itemize}
 
 \section{Non-functional requirements}
-
-Non-functional requirements have been identified as following:
-
-\begin{itemize}
-\item Alerts must have a certain reliability, so that civil protections won't receive untruthful alerts and the database won't be overloaded with too many alerts relative to the same event. This way, users can signal the event easier and faster, query executions are simplified and civil protections can visualize last alerts and alerts with recents upvotes at the top of the list.
-\item The mobile application must be user-friendly.
-\item Civil protection views must be updated real-time without performing a specific request.
-\item Alert information must be saved into a database.
-\end{itemize} 
+- Gli alert devono avere una certa "affidabilità", così da non "disturbare" la protezione civile con alert non veritieri o riempire il db con molte segnalazioni relative allo stesso evento (per questo utilizzati upvotes all'interno di alert)\\
+In questo modo l'utente fa prima ad effettuare una segnalazione\\
+Sul DB si ha una tabella con meno record e che quindi facilita l'esecuzione delle query\\
+Lato protezione civile si vedono in cima alla lista gli ultimi alert e gli alert con upvote recenti\\
+- App mobile user-friendly\\
+- Aggiornamento real-time della view della protezione civile per alert-upvotes senza effettuare richieste specifiche.\\
+- Mantenere le informazioni relative agli alert memorizzate su un DB
 
 \chapter{Architectural design}
 
@@ -178,24 +178,19 @@ The pattern has these advantages:
 \end{itemize}
 
 A better pattern is Repository, it uses a metaphor of a Collection. This metaphor gives the pattern a tight contract and make it easier to understand.\\
-In addition in this case, inheritance, abstract classes, and template methods are used to avoid duplicate code since all models need some common methods, this will be discussed in the next chapter.
+In addition in this case, inheritance, abstract classes, and template methods are used to avoid duplicate code since all models need some common methods, this will be discussed in the next chapters.
 So we have a GenericDAO, with the basic methods, from which all other DAOs extends.
-In the following code segment is shown the GenericDao with methods insert, delete, selectByIdentifier and insertAndGet.\\
+In the following code segment is shown how a GenericDao is composed.\\
 \begin{lstlisting}
 public interface GenericDao {
 
-    void insert(ObjectModel objectModel) 
-    	throws DBDuplicatedRecordException, DBQueryException;
+    void insert(ObjectModel objectModel);
 
-    void delete(ObjectModel objectModel) 
-    	throws DBNotFoundRecordException, DBQueryException;
+    void delete(ObjectModel objectModel);
 
     ObjectModel selectByIdentifier(ObjectModel objectModel);
-
-    ObjectModel insertAndGet(ObjectModel objectModel)
-            throws DBQueryException, 
-            		DBDuplicatedRecordException, 
-            		DBNotFoundRecordException;
+	
+	...
 }
 
 \end{lstlisting}
@@ -205,6 +200,7 @@ Making this change you avoid to expose the type of ObjectModel identity to the i
 
 In our case Repository pattern is realized with DAO.
 \section{RabbitMQ MOM}
+
 It was decided to adopt the Message-Oriented Middleware(MOM) RabbitMQ for the following reasons
 \begin{itemize}
 \item \textbf{Decoupling}: messages can be exchanged between system components which have been placed on the same or different network.
@@ -216,9 +212,20 @@ A message producer produces messages and send them to the Message Broker which
 routes messages to the right consumers. A message consumer await the upcoming messages, then process the information in them.
 
 \subsection{Point-to-Point}
-Point-to-Point communication has been used for client-server communication where more clients can potentially send messages to a queue on which a server consumer of a specific service is waiting for messages.
-When the server receive a request that doesn't need a reply message has to forward the request as a new message to the right queue on which another client is listening.
-%TODO
+Point-to-Point communication has been used in communicating with the server where more clients can potentially send messages to a queue on which a server consumer of a specific service is waiting for messages.
+\\When the server receives a message it is processed and the result can be 
+\begin{itemize}
+\item sent as a response 
+\begin{figure}[ht]
+\centering
+\includegraphics{figures/RPC.jpg}
+\end{figure}
+\item forwarded to another client
+\begin{figure}[ht]
+\centering
+\includegraphics{figures/forward.jpg}
+\end{figure}
+\end{itemize}
 
 \subsection{Publish/Subscribe}
 Publish/Subscribe communication has been used to send a message to multiple clients with consumer consuming on the same queue. 
@@ -228,6 +235,16 @@ The routing key is a message attribute added into the message header by the prod
 A message goes to the queue(s) whose binding key exactly matches the routing key of the message.
 Subscribers needs to bind to the exchange in order to receive messages.
 This is used when a civil protection notice all the other civil protecions about the availability of a specific rescue team.
+
+\begin{figure}[ht]
+\centering
+\includegraphics{figures/ps.jpg}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics{figures/system.png}
+\end{figure}
 
 
 \chapter{Detail design}
@@ -265,8 +282,11 @@ Screenshot + descrizione moduli
 Diagrammi di sequenza per RPC e forward + comunicazione tra CP
 3 tabelle (mobile, alert, civilprotection)
 
-%TODO
-Diagramma delle classi dei messaggi
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.5]{figures/messages.png}
+\caption{Base messages structure}
+\end{figure}
 
 Mobile user - server communication:
 
@@ -309,8 +329,11 @@ Civil protection - Civil protection communication:
 \begin{tabular}{ |p{4cm}|p{4cm}|p{4cm}|p{2cm}| } \hline
 Service 			& Request message 	& Response message		& Type 	\\
 \hline
-Login	& CpLoginMessage(cpID, password)	& RescueTeamsMessage (List$<$RescueTeamImpl$>$) 	& RPC	\\ 
-Get alerts CP	& RequestCpAlertsMes sage(cpID,password)	& AlertsMessage (List$<$AlertImpl$>$) 	& RPC	\\ 
+Get Rescue Team Condition	& ReqRescueTeam ConditionMessage(RescueTeamID)	& ReplyRescueTeam ConditionMessage(RescueTeamID, RescueTeamCondition) 	& p/s	\\ 
+Update Rescue Team Condition	&  ReplyRescueTeam ConditionMessage(RescueTeamID, RescueTeamCondition) 	& 	& p/s	\\ 
+Coordination	&  ReqCoordinationMessa ge(RescueTeamID, reqTimestamp) 	& ReplyCoordinationMes
+sage(RescueTeamID, rescueTeamCondition)	& p/s	\\
+Coordination	&  ReplyCoordinationMessa ge(RescueTeamID, rescueTeamCondition) 	& 	& p/s	\\
 \hline
 \end{tabular}
 \end{center}
@@ -330,6 +353,7 @@ In the DRescue project, Samantha Bandini contribution was mainly related to desi
 
 Our application must access a database, so it needed some logic to handle database access. In order to keep the code clean and modular, the database access logic is isolated into a separate module, in our project is included in package\\ \texttt{server/src/main/java/it/unibo/drescue/database}. This package contains:\\
 
+\subsubsection{DB connection classes}
 %TODO fix packages
 \texttt{DBConnection.java} and \texttt{DBConnectionImpl.java}: Respectively the interface and the class used to model the access method to DB and its tables.\\
 It uses two static factory method instead of constructor, these methods, \\ \texttt{getRemoteConnection()} and \texttt{getLocalConnection()}, are static methods that returns an instance of the class with some specific settings for environment, like address, username and password used to connect to DB. One advantage of this pattern is that in this way it has name, in this case it was useful for specifying the criteria to choose the connection (local or remote).\\
@@ -337,6 +361,7 @@ As specified in previous chapters the DAO pattern was used for Data Access Layer
 
 And the packages:\\
 
+\subsubsection{DAO classes}
 \texttt{dao}: It contains all DAO with their interfaces as specified in detailed design chapter.\\
 %TODO fix: add link
 \includegraphics[width=\textwidth]{figures/ClassDiagram.jpg}
@@ -354,7 +379,7 @@ An example of a particular DAO is CpEnrollment, its method \\
 Every DAO concrete class has been tested trying to isolate single pieces of the code. Following in broad terms the Test-Driven-Development, JUnit simple test classes have been written before each DAO class, and, in order to respect design principle also in test classes, these classes have been refactored. They can be found under the\\ \texttt{server/src/test/java/it/unibo/drescue/database} package.\\
 
 %TODO check
-
+\subsubsection{DB initialization classes}
 \texttt{helper}: It contains the class DBInitializationStart used to initialize DB with static tables contents and some other data contained in externals file, to have something to start with.
 The externals file are located in \textit{server/res}. The DBinitialization interface has a method used to insert into DB all objects listed in a json file, with a parameter \textit{table} that indicates the criteria, so in which table it has to be inserted, and the \textit{pathFile} that indicates the path where the file with objects is located.
 
@@ -426,6 +451,38 @@ The service decides what to do depending on the type of message. Possible messag
 This service is tested with \texttt{scalatest} in class \texttt{MobileuserServiceTest} in the \texttt{connec-\\tion} package. For each type of message, the connection with a local instance of database is opened and operations of insert or update are run. Each test checks if the message type is the type expected. At the end, the fake user is deleted and the connection with database is closed.
 
 \section{Martina Giovanelli}
+In the DRescue project, Martina Giovanelli contribution was mainly related to design and implementation of communication between civil protections by way of the exchange of JSON messages.
+\subsection{Communication between civil protections}
+Every civil protection maintain the condition of the rescue teams it has enrolled in in his local memory. 
+When the civil protection receives a new alert it must communicate with each others in order to decide which rescue team send to solve the occured natural disaster reported by the users.\\
+The rescue teams are shared among the different civil protections so, before select one, they must coordinate with others to recover the picked team status and update their local variable.\\
+The messages \texttt{ReplyRescueTeamConditionMessage} and\\ \texttt{ReqRescueTeamConditionMessage} inside \texttt{civilprotection} module are exchanged between the different civil protection respectively to request and send the condition of a particular rescue team.
+
+For communication between civil protection we decided to use \textbf{ Ricart-Agrawala's algorithm}, a classical mission exclusion algorithm for distributive systems, to manage the rescue teams' condition .\\
+Communication between processes is based on the following assumptions:
+\begin{itemize}
+\item Processes communicate by reading and writing variables through the exchange of messages.
+\item The delay of sending a message is unpredictable but finished.
+\item The channel be reliable. A sent message is received correctly from its recipient, furthermore, there are no duplications or spurious messages (received but never transmitted). 
+\item The process do not fail. 
+\end{itemize}
+
+The class \texttt{CoordinatorImpl} and the respective interface \texttt{Coordinator} inside the package \texttt{civilprotection/src/main/java/it/unibo/drescue/utils} are a singleton used for the implementation of the above algorithm.\\
+In particolar this class keeps the process status in relation to the critical section: \texttt{wanted}, \texttt{held} and \texttt{detached}.\\
+The condition of the coordinator is equal to \texttt{wanted} when the civil protection wants to enter into critical section and updated the status of one  its rescue team. 
+In this case the coordinator also maintains the timestamp of the request, the list ID of the civil protection from which the process expect an replay message and the critical section's name which corresponds exactly to the name of the rescue team.\\
+The coordinator's condition is equal to \texttt{held} when the process is into critical section and \texttt{detached} when the civil protection isn't interested to occupied one team.\\
+The coordinator keep the civil protection's condition for only one critical section.\\
+In detail, for the implementation of this algorithm two other message have been used:
+\texttt{ReqCoordinationMessage} and \texttt{ReplyCoordinationMessage}.  
+
+\subsection{Rescues management}
+Individual contribution in civil protection Model-View-Controller was mainly concerned the management of the rescue team into \texttt{ManageRescuesControllerImpl} class and the handle of the  messages received from other civil protection.\\
+When the civil protection wants to occupied a rescue team it sends a  broadcast message to other civil protections that has enrolled in the same rescue team in order to received their local condition.
+it waits until it received all the reply message or received a reply that inform it that the rescue team is already occupied.
+In the first case the civil protection can occupied the rescue team in the other it must choose another team.\\
+When civil protection wants to stopped the rescue team it update its local  condition from occupied to available and send a message to other civil protection to inform them about the updated team status.\\
+
 \section{Anna Giulia Leoni}
 
 The developed part mainly concerns the development of the Server application and the Android one, but also  a little part in the Civil Protection application.
@@ -441,7 +498,6 @@ Services that can handle both response and forward extends \texttt{ServiceRespon
 \\More specifically if the \textit{properties.getReplyTo} content is a valid string then represents the name of the queue to which send the response message returned from \textit{accessDB} method. Otherwise the result of the \textit{accessDB} method is a \texttt{FrowardObjectMessage} containing the ObjectModel to forward and the queues name to which forward it.
 \\This behaviour is tested using inside \texttt{TestClientServerCommunication} class in \texttt{test} folder of package \texttt{connection}.
 \\
-%TODO diamond inheritance pic?
 
 \subsubsection{AlertsService}
 Case class \texttt{AlertsService} in package \texttt{connection} extends \texttt{ServiceResponseOrForward} and manages messages requests related to alerts both from mobileuser and civil protection. More specifically these messages are shown in the detail design section.
@@ -460,10 +516,8 @@ Activities have been implemented with the related layouts to allow the user to s
 \item \texttt{SplashActivity} represents the splash screen of the app where the user can select to sign up or login
 \item \texttt{SignUpActivity} and \texttt{LoginActivity} in package \texttt{authentication} represent respectivly the activity that contains the fields that the user must fill to sign up and login. Some checks are made on the validity of the email address and the match between password and confirm password at sign up.
 \item \texttt{UpvoteAlertActivity} in package \texttt{alert} represents the activity that contains a list of existing alerts that the user can upvote to increase their reliability. It extends \texttt{GpsActivityImpl} because latitude and longitude of the user are needed to correctly download alerts of its district. \\
-The alert list is presented within the app using Adapter and ListView. The \texttt{Alert Adapter} allows access to data and creates the corresponding view based on the layout provided for each alert of the given list. Inside the Adapter the ViewHolder pattern has been used to limit the number of calls to \textit{findViewbyId} method. This ways, this methods is invoked once for every items of the list passed at constructor and references to layout elements are stored in an \texttt{AlertViewHolder} instance associated with convertView with \textit{View.setTag} to be used for next items.
+The alert list is presented within the app using Adapter and ListView. The \texttt{Alert Adapter} allows access to data and creates the corresponding view based on the layout provided for each alert of the given list. Inside the Adapter the ViewHolder pattern has been used to limit the number of calls to \textit{findViewbyId} method. This ways, this methods is invoked once for each item of the list passed at constructor and references to layout elements are stored in an \texttt{AlertViewHolder} instance associated with convertView with \textit{View.setTag} to be used for next items.
 \end{itemize}
-
-%TODO digramma classi?
 
 \subsubsection{Connection to server}
 The package \texttt{connection} contains the classes used to communicate to the server and eventually parse the response.
@@ -477,14 +531,16 @@ More specifically two AsynkTask were created:
 The connection to the server was added into the activities of package \texttt{alert} using the above classes. Before sending the message to the server it is always checked that the device is connected to the netword and, if needed, if latitude and longitude values are correct. More specifically
 \begin{itemize}
  \item in \texttt{NewAlertActivity} a \texttt{NewAlertMessage} containing the alert data is created, sent and the result of the sending is shown to the user.
- \item in \texttt{UpvoteAlertActivity} a \texttt{RequestUpvoteAlertMessage} containing the upvote data is created, sent and the result is shows as above; a \texttt{RequestAlertsMessage} containing user position is sent through RPC and on receiving the alert list of his district the adapter must be notified. If timeout is reached or an error occurr an error message is shown.
- 
+ \item in \texttt{UpvoteAlertActivity} a \texttt{RequestUpvoteAlertMessage} containing the upvote data is created, sent and the result is shows as above; a \texttt{RequestAlertsMessage} containing user position is sent through RPC and on receiving the alert list of his district the adapter must be notified. If timeout is reached or an error occurr an error message is shown. 
 \end{itemize}
 
 \subsection{Civil Protection application}
 
-\subsubsection{RescueTeamConsumer}
-%TODO
+All the code referred into this section is located into module \texttt{civilprotection}.
+
+The developed part is strictly connected to request and response messages exchanged between civil protections in order to obtain information about the condition of their rescue teams.
+\\These messages are \texttt{ReqRescueTeamConditionMessage} and \texttt{ReplyRescueTeamCondition\\Message}; their reception is handled inside \texttt{RescueTeamConsumer}. More specifically on receiving the first message the civil protection reply with the second one, setting as condition the one stored in \textit{EnrolledTeamInfo} local model for the specific rescue team; on receiving the second one the civil protection update its local model with the condition received.
+A message to request enrolled rescue teams conditions is also sent at login and on enrolling a new team.
 
 \section{Sofia Rosetti}
 In the DRescue project, Sofia Rosetti contribution was mainly related to design and implementation of:
@@ -518,7 +574,7 @@ Every model entity represents one database table with all its attributes, so eve
 
 In the same package some other classes ending by ``Builder'' can be found. This because for class constructors with more than three fields the Builder pattern has been used.
 
-Every model class has been tested trying to isolate single pieces of the code. For this purpose JUnit test classes have been written together with each model class. They can be found under the \texttt{utils-java/src/test/java/it/unibo/drescue/model} package.
+Every model class has been tested writing JUnit test classes, which can be found under the \texttt{utils-java/src/test/java/it/unibo/drescue/model} package.
 
 \subsection{Civil protection views}
 In order to mantain most of civil protection module implemented using the Scala language, views have been created by hand with \textbf{ScalaFX}. 
@@ -534,13 +590,9 @@ The \texttt{MainView} provides a method to change the view that creates a new sp
 A \texttt{ViewConstants} object has been implemented too with the purpose of collecting all used constants and remove all magic numbers inside view classes.
 
 \subsection{Civil protection Model-View-Controller}
-Individual contribution in civil protection was firstly focused on the base application arrangement. The system has been designed following the Model-View-Controller pattern, therefore the views have to handle presentation and user interaction, the model handles the application logic and the controller coordinates model and views.
+Individual contribution in civil protection Model-View-Controller was firstly focused on the base arrangement of links between the views in consequence of all buttons pressure.
 
-The civil protection controller is composed of five controller classes, one for each grid and a main controller. This because each grid only communicates with its relative controller, and then each controller can communicate with the main controller.
-
-The grids' container class (\texttt{MainView}) has the reference of each controller in order to instanciate each grid with the proper controller. This has been implemented using the Builder pattern with named parameters.
-
-Some buttons have been inserted to move among views. Every button has been provided of a mouse event able to catch the mouse click. So relative controller methods are called and all relative actions are performed in order to switch to the right view.
+Every button has been provided of a mouse event able to catch the mouse click. So relative controller methods are called and all relative actions are performed.
 
 Part of the individual contribution was then oriented to implement two scala classes that belong to the civil protection local model.
 The \texttt{AlertEntry} and \texttt{EnrolledTeamInfo} classes have been created to simplify insertion and values retrieval from the \textit{TableView} elements contained in the relative views. An \texttt{AlertEntry} element represents a table entry of the \texttt{HomeGrid}, because it's necessary to show the alert ID, the timestamp, latitude and longitude, the user and the district ID, the event name and the upvotes with a table representation. Similarly, the an \texttt{EnrollTeamInfo} element represents a table entry of the \texttt{ManageRescuesGrid}, because in this case it's necessary to show the team ID, name and phone number, if the team is available or not, the ID of the civil protection which occupied the team and the ID of the alert for which the team has been sent.
@@ -549,17 +601,13 @@ These two classes are also used in the \texttt{CivilProtectionData} class, which
 
 \section{Common parts}
 %TODO Common part
-I messaggi sono stati implementati a seconda delle necessità facendo per ognuno i test.
+Depending on the needs encountered during the implementation, messages were created by each of us with its tests.
 
 \subsection{Samantha Bandini - Sofia Rosetti}
 
-\subsubsection{MVC (focus home e login)}
+\subsubsection{MVC package organization}
 
-It has been necessary to realize an application oriented to the data management %TODO
-
-It has been necessary to handle civil protection datas 
-
-E' stato necessario effettuare una gestione orientata alla gestione dei dati relativi alla protezione civile che sta utilizzando l'applicativo.\\
+Civil protection application has been realized in order to focus on the management of data relative to the specific civil protection that is using the system.\\
 
 Code has been organized as \texttt{civilprotection/src/main/scala/it/unibo/drescue/} package shows: 
 
@@ -572,19 +620,33 @@ Code has been organized as \texttt{civilprotection/src/main/scala/it/unibo/dresc
 Package localModel contains CivilProtectionData class, which represents the main local model to handle in each civil protection.
 
 
-\subsubsection{Model update management}
+\subsubsection{Handle model in civil protection module using pattern Observer)}
 
 The views' real-time update has been set up with Observer pattern. Each model change produces a notification and the view is updated through an ObservableBuffer.
 
 Observer pattern has been organized as following: the Observer trait is included in \texttt{civilprotection/src/main/scala/it/unibo/drescue/controller} package, as three minor controllers must implement it. This trait contains a \textit{onReceivingNotification()} method each observer class must implement in order to react to a notification.
 
-In the same way, \texttt{civilprotection/src/main/scala/it/unibo/drescue/localModel} package contains the Observable trait, which is implemented from the CivilProtectionData class in order to notify a change. This trait has an object representing an enumeration with which the right observer is notified. The \textit{addObserver()} method is used to associate an observer to an observable object, while the \textit{notifyObserver()} method is used to notify the right observer through the enumeration.
+In the same way, \texttt{civilprotection/src/main/scala/it/unibo/drescue/localModel} package contains the Observable trait, which is implemented by the CivilProtectionData class in order to notify a change. This trait has an object \textit{Observers} that represent an enumeration with which the right observer is notified. The \texttt{addObserver()} method is used to associate an observer to an observable object, while the \textit{notifyObserver()} method is used to notify the right observer through the enumeration.
 
-%TODO
-AlertConsumer (è un consumer di RabbitMQ che rimane in attesa su una coda per ricevere i messaggi di ForwardAlertMessage e ForwardUpvotedAlertMessage; quando arrivano provvede all'aggiornamento del model) e RequestHandler (serve per far partire una future che ritorna un risultato che è la risposta che deve essere interpretata dal controller in quanto è un messaggio codificato tramite formato JSON)
+\subsubsection{Handle communication from civil protection to server}
+%TODO fix
+La comunicazione client-server lato protezione civile è stata gestita per lo più dalle classi:\\
+
+\texttt{RequestHandler.scala} la quale fa partire una future che ritorna un risultato, il quale è la risposta che deve essere interpretata dal controller in quanto è un messaggio codificato tramite formato JSON.
+
+
+\texttt{AlertConsumer} è un consumer di RabbitMQ che rimane in attesa su una coda per ricevere i messaggi di ForwardAlertMessage e ForwardUpvotedAlertMessage; alla ricezione di questi messaggi provvede all'aggiornamento del model.\\
 
 \subsection{Samantha Bandini - Elisa Casadio - Anna Giulia Leoni}
-Eccezioni
+\subsubsection{Handle DB layer exeptions}
+It was decided to handle database exception because to different exceptions corresponds different actions server side. All the database exceptions can be found in package \texttt{database/\\exceptions} of module \texttt{server/java}. More specifically
+\begin{itemize}
+\item a \texttt{DBConnectionException} is thrown if an error occurr while establishing or closing connection to database, or when asking to access a non-existing table.
+\item a \texttt{DBQueryException} is thrown if an error occurr while executing a query.
+\item a \texttt{DBDuplicatedRecordException} is thrown while inserting an object into database, when an equal object (with the same identifier) was found in database.
+\item a \texttt{DBNotFoundRecordException} is thrown while searching an object into db, when an equal object (with the same identifier) was not found in database.
+\end{itemize}
+Sometimes when the last two occur, the error is notified to the client, otherwise it is only logged.
 
 \subsection{Elisa Casadio - Anna Giulia Leoni}
 \subsubsection{Server structure}
@@ -592,9 +654,9 @@ The code executed on server is located inside the \texttt{connection} package in
 
 \begin{itemize}
 \item \texttt{ServerMain} represents the main class of the module, contains the code to setup the connection to RabbitMQ broker and runs all the services.
-\item \texttt{Service} is a case class that represents a generic service. A new channel is created on the given connection and a new \texttt{ServerConsumer} is added to the channel and consume on the given queue.
+\item \texttt{Service} is a case class that represents a generic service. A new channel is created on the given connection and a new \texttt{ServerConsumer} is added to the channel to consume on the given queue.
 \item \texttt{ServerConsumer} is a simple server-side consumer extending the default RabbitMQ consumer and overriding the \emph{handleDelivery} method called when consuming a message. Furthermore, a class implementing \texttt{ServerOperation} trait must be passed to the consumer in order to access database and handle potentially the returning result. In case of \emph{accessDB} method throw an exception, the error is logged, otherwise the result is handled. 
-\item \texttt{ServiceOperation} is a trait modelling a general service to access database and handle the result. This trais is implemented by all classes that represent the specific services. The \emph{accessDB} method is where concreate access is using the data access object.
+\item \texttt{ServiceOperation} is a trait modelling a general service to access database and handle the result. This trait is implemented by all classes that represent the specific services. The \emph{accessDB} method is where concreate access to database is using the Data Access Object.
 \end{itemize}
 
 \subsubsection{Server configuration}
