@@ -76,6 +76,8 @@ Following development support tools have been used:
 \item \textbf{Travis CI} as continuous integration service
 \item \textbf{Trello} as web project management application
 \item \textbf{TeamViewer} as team collaboration and working tool
+\item \textbf{Google Drive} and \textbf{Dropbox} for sharing files and working simultaneously
+\item \textbf{Google Calendar} and \textbf{GTimeReport} for working hours count
 \end{itemize}
 
 %TODO Test: JUnit e ScalaTest da specificare nelle singole implementazioni
@@ -631,9 +633,10 @@ These two classes are also used in the \texttt{CivilProtectionData} class, which
 
 \section{Common parts}
 %TODO Common part
-Depending on the needs encountered during the implementation, messages were created by each of us with its tests.
+Depending on the needs encountered during the implementation, messages were created by each of us with relative tests.
 
 \subsection{Samantha Bandini - Sofia Rosetti}
+All work has been carried out according to the pair programming technique.
 
 \subsubsection{MVC package organization}
 
@@ -650,7 +653,7 @@ Code has been organized as \texttt{civilprotection/src/main/scala/it/unibo/dresc
 Package localModel contains CivilProtectionData class, which represents the main local model to handle in each civil protection.
 
 
-\subsubsection{Handle model in civil protection module using pattern Observer)}
+\subsubsection{Handle model in civil protection module using pattern Observer}
 
 The views' real-time update has been set up with Observer pattern. Each model change produces a notification and the view is updated through an ObservableBuffer.
 
@@ -718,119 +721,65 @@ All the system components communicate through messages exchanged in JSON format.
 
 \chapter{Retrospective}
 
-(descrizione finale dettagliata dell'andamento dello sviluppo, del backlog, delle iterazioni; commenti finali)\\
+%(descrizione finale dettagliata dell'andamento dello sviluppo, del backlog, delle iterazioni; commenti finali)\\
 
-*) Cercate di dare una idea di quanto pensate che i vostri test automatizzati coprano il codice e dove: è importante per stimare il potenziale impatto di una modifica al software\\
-
-
-Si noti che la retrospettiva è l'unica sezione che può citare aneddoti di cosa è successo in itinere, mentre le altre sezioni fotografano il risultato finale. Se gli studenti decideranno (come auspicato) di utilizzare un product backlog e/o dei backlog delle varie iterazioni/sprint, è opportuno che questi siano file testuali tenuti in versione in una cartella "process", così che sia ri-verificabile a posteriori la storia del progetto.
-
-%TODO riassumere e preparare i file per il repository (process/sprints/report)
-1 Sprint
-Organizzazione per capire un po’ le competenze di ognuna.
-
-Suddivisione generale compiti 
-
-Decisione di come tenerci aggiornate (tools)
-
-Molti documenti su google drive (su cui lavorare in contemporanea)
-
-Alcuni file su dropbox (apk o file utili per configurazioni al pc)
-
-Product backlog (difficoltà stima tempi)
-
-Diagrammi di sequenza 
-
-Schemi su excel per messaggi da preparare per le varie code
-
-Configurazione degli ambienti
-
-2 Sprint 
-
-Inizio configurazioni di base (orientate su server e db) 
+%*) Cercate di dare una idea di quanto pensate che i vostri test automatizzati coprano il codice e dove: è importante per stimare il potenziale impatto di una modifica al software\\
 
 
--	Fatte prove per impostare la macchina per capire se potesse essere quello che poteva servire a noi (nessuna di noi aveva mai utilizzato aws o configurato una qualsiasi macchina linux con questo scopo prima)
--	Abbiamo molti dati e per essere sicure di avere un sistema aggiornato e persistente almeno per quanto riguarda alert e protezioni civili, si è ritenuto importante mantenere memorizzate alcune informazioni e “predisporre” il db per futuri cambiamenti, aggiornamenti
+%Si noti che la retrospettiva è l'unica sezione che può citare aneddoti di cosa è successo in itinere, mentre le altre sezioni fotografano il risultato finale. Se gli studenti decideranno (come auspicato) di utilizzare un product backlog e/o dei backlog delle varie iterazioni/sprint, è opportuno che questi siano file testuali tenuti in versione in una cartella "process", così che sia ri-verificabile a posteriori la storia del progetto.
 
-\section{Encountered issues}
-Scelta AWS dopo perdita di tempo con Google App Engine
+According to Agile metodology, we defined each Sprint at the end of the previous one and tasks have been divided among group members in base of preferences and previous knowledge.
 
-Incompatibilità Scala-Android
+Due to Martina Giovanelli's full-time work, she preferred to develop independently a part that didn't slow down general development process. Anyway, she took part of every Sprint closure together with other members.
 
-Pessimo supporto di IntelliJ con più moduli tra cui Android (Android ILogger)
+During the first meetings we met face to face in order to discuss requirements and base architecture of the project, including some architectural pattern to adopt.
+We set up all development environments, including the repository and the automatic build tools.
 
-Il DB poteva esser fatto in Scala ma la valutazione è stata fatta troppo tardi.
+According to the requirements, we decided fundamental system parts to start with and other parts' priority.
 
-I DAO comportano duplicazione di codice. Si è cercato di gestire questo aspetto il meglio possibile.
+We initially wanted to use a Platform-As-A-Service system regardless of the underlying infrastructure, in order to take advantage of the existing APIs. Because of this, we spent some time trying to learn the best way to use the Google App Engine platform.
+Unfortunately, we encountered some problems. In Italy there is only the possibility to register a commercial account and not a private account. Moreover, the Flexible Environment we needed had only a Beta version of Java 8 and no Scala support.
 
-Per consegnare entro i 2 mesi dall'accettazione del progetto l'ultima parte (civilprotection) è stata implementata senza eccellenza tecnica: questo per completare i principali requirements inizialmente definiti.
+For these reasons, we decided to switch on Amazon Web Services, which is an Infra-\\structure-As-A-Service. We set up two AWS instances, one for computation (\textit{Amazon Elastic Compute Cloud}) and one for the database (\textit{Amazon Relational Database Service}).
 
-Difficoltà nella stima delle tempistiche.
+Initially, to test if the remote communication with AWS was working, we implemented the communication using sockets. We also tried to use Akka for communication between civil protections, but in the end we decided to use RabbitMQ in order to have the same communication type for both mobile and civil protection sides. This because RabbitMQ doesn't require to know each receiving address, but only the broker one and the queue to send requests on.
+
+During development, most significant problems were related to:
+
+\begin{itemize}
+\item conflicts between Scala and Android, that brought to the creation of a separate module \texttt{utils-java}, containing only Java code;
+\item \textit{AndroidILogger} IntelliJ bug, which disables all coding support and allows to find errors only during the build process. For this reason, we had to write only few lines of code before building the working module.
+\end{itemize}
+
+We also encountered difficulties in estimating each feature time. This brought to develop last project part (mainly related to the civil protection module) without technical excellence.
+
+Finally, we discovered there is a problem with the RDS instance: sometimes responses are corrupted in spite of correct requests. This brings to the inability of accessing to the database data.
+Development tests have been made with local server and local database, and nothing went wrong.
 
 \section{Final judgement}
 
+Although anyone had previously worked in a five people group, relationship and communication were good and each member was helpful with each other.
+
+We are satisfied enough with the project result. In spite of some problems with the RDS instance, we reached a good result where communication brings to real-time updates of data and their relative transmission. It was important to reach this goal, because a possible future expansion may bring to a public benefit.
+
 \section{Future developments}
-Fornire indicazioni alla protezione civile per aiutare nella scelta di un soccorso (già gestito lato DB-server): Rilevanza per alert con molti upvote / in base alla popolazione della zona, Algoritmo intelligente per la selezione della squadra in base alla distanza
 
-CP: Mappa e possibilità di filtrare sui tipi di eventi
-
-Zone di intervento delle CP che possono essere intersecate (già gestito lato DB-server)
-
-App per le squadre di soccorso e per i soccorritori
-
-Eventi realmente accaduti e relative statistiche
-
-Estensione dell'applicazione mobile per altre piattaforme + miglioramenti (modifica profilo utente)
-
-Live rescues: necessita salvataggio soccorsi su DB (evento accaduto, CP che ha fatto partire il soccorso e squadra di soccorso)
-
-Sicurezza lato protezione civile per login (si è pensato con token/autenticazione)
-
-User stories in grigio
-
-\end{document}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\newpage
-
-Some useful latex commands:\\
-
+Database and server have been already designed for possible future expansions, like :
 \begin{itemize}
-\item FirstItem  \texttt{A command}\\
-
-
-\item Something Big: what it does: \\
-- \textit{Something}, what it does.\\
-- \textit{Other}, what it does.
-
+\item civil protections operating on common districts;
+\item a session and an authentication token;
+\item register real occurred events to keep events history;
+\item a smart algorithm that knows which is the best rescue team to send for a rescue;
+\item a smart algorithm that suggests when a rescue should be started basing on alerts, upvotes and districts population.
 \end{itemize}
 
-\section*{A section}
+Other possible expansions are:
 
-\subsubsection*{A subsection}
-Something $"\texttt{some formatted code}:\textbf{code}"$\\
+\begin{itemize}
+\item showing a map with marks on alerts' location;
+\item creation of a rescue team application to accept and notify the rescue end;
+\item let the mobile user change his profile data;
+\item encrypt passwords to improve system security.
+\end{itemize}
 
-NOTE Something: $command$ (to write a method name for example) or use it for field name like $player\textbf{ID}$. 
-
-\end{document}
-
-
-    
-    
+\end{document} 
