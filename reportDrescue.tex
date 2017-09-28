@@ -66,23 +66,32 @@ Each civil protection manages a single district, but each rescue team can join d
 
 
 
-For managing product develop we were inspired by Scrum framework, an iterative and incremental agile software development methodology.
-According to Scrum method we decided to have face-to-face meeting as often as possible and when not possible due to personal commitments we planned meeting via VoIP. \\
+To manage product development we were inspired by Scrum framework, an iterative and incremental agile software development methodology.
+According to Scrum method we decided to have face-to-face meeting as often as possible and when not possible due to personal commitments we planned meeting via VoIP.
+
 We have chosen Sofia Rosetti as Product Owner but we proceeded working together and giving always advices and ideas each others.
 
-Despite commitments we tried to organize face-to-face meetings at least once every two weeks, most frequently in the first and last period. So, working at home, we tried to follow the following meeting mode: \\
-Every morning teams member available to work on that day had a morning meeting (few minutes) via VoIP or, most frequently, via instant chat, to plan the daily job.\\
+Despite commitments we tried to organize face-to-face meetings at least once every two weeks, most frequently in the first and last period. So, working at home, we tried to follow the following meeting mode.
+
+Every morning teams member available to work on that day had a morning meeting (few minutes) via VoIP or, most frequently, via instant chat, to plan the daily job.
 Often, in addition to that concise morning meeting, we made a brief evening meeting to aware others members about problems encountered or doubts during work.
 
-We planned Sprint meeting (in addition to the specified daily meetings) as follows:\\
+We planned Sprint meeting (in addition to the specified daily meetings) as follows.
+
 Before each sprint, a sprint planning was organized (max one hour) in which all group members were present. At the end of each sprint, we all met together again to do sprint reviews and sprint retrospectives. Except for the first sprint, these two operations took place on the same day.\\
 During the Sprint Review meeting one member at time presented to the others in a few minutes what was done, even with brief examples.
 
-Unfortunately, due to external commitments or personal reasons every member couldn't dedicate only to this single project, for this reasons, we couldn't even split equally the tasks between members for every sprint or split every sprints with equal amount of hours. \\ %TODO tradurre sotto
-La gestione delle sprint si è svolta quindi in modo flessibile, as we can see in the product backlog that could be found together with the release %TODO tradurre bene
+Unfortunately, due to external commitments or personal reasons every member couldn't dedicate only to this single project. For this reasons, we couldn't even split equally the tasks between members for every sprint or split every sprints with equal amount of hours.
 
-Abbiamo cercato di mantenere un product backlog che si evolveva nel corso del tempo, come stima si è scelto di utilizzare le ore di lavoro ( %TODO %TODO
-SCRIVERE ULTIMO CAP - ABBIAMO AVUTO PROBLEMI A STIMARE IL LAVORO DELLE VARIE SPRINT E SPESSO CI SIAMO RITROVATE A RIORGANIZZARLE VERSO FINE DELLA SPRINT)\\
+So, sprints management has been carried out in a flexible way, 
+as we can see in the product backlog that can be found together with the release 
+
+We tried to mantain a product backlog evolving during time and we chose working hours as valuation.
+
+%Abbiamo cercato di mantenere un product backlog che si evolveva nel corso del tempo, come stima si è scelto di utilizzare le ore di lavoro 
+
+During Sprint planning we compiled a quite generic list fo Sprint tasks, which was redefined and perfectioned when chosen.
+
 Durante la Sprint planning veniva stilata una lista abbastanza generica di Sprint tasks, che veniva poi ridefinita e perfezionata da ognuna di noi nel momento in cui veniva scelta. 
 
 
@@ -196,7 +205,7 @@ The system's components, shown in figure \ref{fig:ArchDesign}, are:
 \subsection{Model-View-Controller}
 As civil protection is a desktop application which consists of a relevant visual part, it has been handled using the Model-View-Controller pattern, that allows to decouple major components for efficient code reuse and parallel development.
 
-As shown in figure \ref{fig:MVC}, MVC has been arranged with a major controller that communicates with four minor controllers, each one relative to a single view.
+As shown in Figure \ref{fig:MVC}, MVC has been arranged with a major controller that communicates with four minor controllers, each one relative to a single view.
 
 \begin{figure}[ht]
 \centering
@@ -303,13 +312,13 @@ Before the applications implementation, the graphical user interface design is a
 
 \subsection{Mobile App}
 
-The graphical user interface for mobile application is designed to answer at all the functional requirements user side and to be user-friendly.
+The graphical user interface for mobile application has been designed in order to answer all functional requirements user side and to be user-friendly.
 
-In the Figure \ref{fig:Mobilemockup}, the mockup realized for mobile application is shown. There are two main screens: one for the user not logged and one for the user logged.
+In Figure \ref{fig:Mobilemockup}, the mockups realized for mobile application are shown. There are two main screens: one for the user not logged and one for the user logged.
 
 The first main screen is designed to allow a user to login with his credentials and a new user to register.
 
-The second main screen allows to a user logged to reach the screens to see all the last alarms in the district where the user is, to send a new alarm and to see and manage his profile.
+The second main screen allows a logged user to reach the screens to see all the last alarms in the district where the user is, to send a new alarm and to see and manage his profile.
 
 \begin{figure}[ht]
 \centering
@@ -319,6 +328,20 @@ The second main screen allows to a user logged to reach the screens to see all t
 \end{figure}
 
 \subsection{Civil Protection}
+
+The graphical user interface for civil protection desktop application has been designed in order to allow civil protection users to receive real-time updates and to perform all actions relative to enroll a new rescue team and start or stop a rescue for a specific alert. This requires the existence of view where last alerts are shown, and a more specific view in which civil protection users can see which rescue teams are available and which are occupied. A rescue team can be occupied by different civil protections, so the system has been designet to let users know which civil protection started the rescue and when it ends.
+
+Civil protection application mockups are shown in Figure \ref{fig:CPmockup}.
+
+When civil protection application starts, the first shown screen is the login one, where there's the need to insert the specific civil protection username and password.
+
+Once logged, the home screen allows to see the last fifty alerts relative to the civil protection operating area. If a new alert is send, the view automatically updates showing it at the top of the list, because it's the most recent one. This also happens if a new upvote is send, so the upvoted alert is moved at the top of the list.
+
+From the home view, clicking on the ``\textit{Enroll team}'' button, there is the possibility to enroll a new rescue team. On the left side of the screen a list containing existing but not enrolled teams is present, while on the right side there is the possibility to register a not already existing rescue team with all relative data. With the ``\textit{Add}'' button, the new rescue team is stored into the database, and the relative left list is updated, allowing the user to select the team in order to enroll it.
+
+Still from the home view, civil protection users can select an alert and by clicking on the ``\textit{Start rescue}'' button can select the appropriate rescue team to send.
+
+To manage rescues in order to stop a rescue if necessary, civil protection users can click on the ``\textit{Manage rescues}'' button, which shows a screen where there's only the possibilty to stop the rescue team.
 
 \begin{figure}[ht]
 \centering
@@ -739,13 +762,13 @@ Observer pattern has been organized as following: the Observer trait is included
 In the same way, \texttt{civilprotection/src/main/scala/it/unibo/drescue/localModel} package contains the Observable trait, which is implemented by the CivilProtectionData class in order to notify a change. This trait has an object \textit{Observers} that represent an enumeration with which the right observer is notified. The \texttt{addObserver()} method is used to associate an observer to an observable object, while the \textit{notifyObserver()} method is used to notify the right observer through the enumeration.
 
 \subsubsection{Handle communication from civil protection to server}
-%TODO fix
-La comunicazione client-server lato protezione civile è stata gestita per lo più dalle classi:\\
 
-\texttt{RequestHandler.scala} la quale fa partire una future che ritorna un risultato, il quale è la risposta che deve essere interpretata dal controller in quanto è un messaggio codificato tramite formato JSON.
+Client-server communication for the civil protection side has been mainly handled with classes:
 
-
-\texttt{AlertConsumer} è un consumer di RabbitMQ che rimane in attesa su una coda per ricevere i messaggi di ForwardAlertMessage e ForwardUpvotedAlertMessage; alla ricezione di questi messaggi provvede all'aggiornamento del model.\\
+\begin{itemize}
+\item \texttt{RequestHandler.scala}, which starts a future that returns a result. The future result is the response which has to be understood from the controller as it is a message encoded with the JSON format.
+\item \texttt{AlertConsumer}, which is a RabbitMQ consumer that is waiting for the reception of messages like ForwardAlertMessage and ForwardUpvotedAlertMessage; when received, this consumer arranges for the model update.
+\end{itemize}
 
 \subsection{Samantha Bandini - Elisa Casadio - Anna Giulia Leoni}
 \subsubsection{Handle DB layer exeptions}
