@@ -71,9 +71,6 @@ We tried to mantain a product backlog evolving during time and we chose working 
 
 During Sprint planning we compiled a quite generic list fo Sprint tasks, which was redefined and perfectioned when chosen.
 
-%TODO da riguardare
-%Each Sprint started with the product backlog (where all the main tasks are defined) followed by the Sprint Backlog where all the created tasks were well discussed and divided in more defined and detailed subtasks. During the first 3-4 Sprints each member of the team used to volunteer to be assigned to one or more tasks. As the development continued, each member was assigned to a well defined and specified sub-system, creating a better organized environment where everybody knew exactly what the other was working on. At the end of each week, we used one hour of our time (Sprint Retrospective) to discuss about what went good and what had to be improved during the next Sprint
-
 \section{Development tools}
 Following development support tools have been used:
 
@@ -167,14 +164,15 @@ The system's components, shown in figure \ref{fig:ArchDesign}, are:
 \subsection{Model-View-Controller}
 As civil protection is a desktop application which consists of a relevant visual part, it has been handled using the Model-View-Controller pattern, that allows to decouple major components for efficient code reuse and parallel development.
 
-As shown in Figure \ref{fig:MVC}, MVC has been arranged with a major controller that communicates with four minor controllers, each one relative to a single view.
-
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\textwidth]{figures/MVC.png}
 \caption{MVC}
 \label{fig:MVC}
 \end{figure}
+
+As shown in Figure \ref{fig:MVC}, MVC has been arranged with a major controller that communicates with four minor controllers, each one relative to a single view.
+
 
 \subsection{Data Access Object}
 Data Access Object (DAO) is a commonly used pattern to persist domain objects into a database. The most common form of a DAO pattern is a class that contains CRUD methods for a particular domain entity type.
@@ -245,13 +243,7 @@ This is used when a civil protection notice all the other civil protecions about
 \label{fig:PS}
 \end{figure}
 
-%(pattern architetturali usati, componenti del sistema distribuito, scelte tecnologiche cruciali ai fini architetturali -- corredato da pochi ma efficaci diagrammi)\\
-%Ricordate che una scelta architetturale può ritenersi giustificata o meno (e dovremo capirlo) solo a fronte dei requirement che avete indicato\\
-%L'architettura deve spiegare quali sono i sotto-componenti del sistema (da 3 a 10, diciamo), ognuno cosa fa, chi parla con chi e per dirsi cosa -- i diagrammi aiutano\\
-
 \chapter{Detail design}
-%(pattern di progettazione, organizzazione del codice -- corredato da pochi ma efficaci diagrammi)\\
-%Il design di dettaglio "esplode" (dettaglia) l'architettura, ma viene concettualmente prima dell'implementazione, quindi non metteteci diagrammi ultra-dettagliati estratti dal codice, quelli vanno nella parte di implementazione
 
 \section{Graphical User Interface Design}
 
@@ -330,7 +322,7 @@ More specifically the remote server is running on an EC2 instance (t2.micro) whe
 \begin{itemize}
 \item \textbf{Builder}: the builder pattern was used for model classes and those of messages that had more than 2-3 arguments at constructor.
 \item \textbf{Template Method}: the template method pattern was used in handling server response in case of RPC and to group similar objects with common methods in accessing database.
-\item \textbf{Singleton}: the singleton pattern was user for the Coordinator implementation to keep the process status in relation to the critical section in Ricart-Agrawala algorithm.
+\item \textbf{Singleton}: the singleton pattern was used for the Coordinator implementation to keep the process status in relation to the critical section in Ricart-Agrawala algorithm.
 \item \textbf{View-Holder}: the view-holder pattern was used into Android adapter to store each of the component views inside the tag field of the Layout in order to access them without the need to look them up repeatedly.
 \item \textbf{Adapter}: the adapter pattern was used as a bridge between a view and the underlying data for that view; it provides access to the data items and it is also responsible for making a view for each item in the data set.
 \item \textbf{Static factory}: the static factory pattern was used to create database connection.
@@ -442,19 +434,17 @@ In the DRescue project, Samantha Bandini contribution was mainly related to desi
 
 \subsection{Data Access Layer}
 
-Our application must access a database, so it needed some logic to handle database access. In order to keep the code clean and modular, the database access logic is isolated into a separate module, in our project is included in package\\ \texttt{server/src/main/java/it/unibo/drescue/database}. This package contains:\\
+Our application must access a database, so it needed some logic to handle database access. In order to keep the code clean and modular, the database access logic is isolated into \texttt{server/src/main/java/it/unibo/drescue/database} package. This package contains:
 
 \subsubsection{DB connection classes}
-%TODO fix packages
 \texttt{DBConnection.java} and \texttt{DBConnectionImpl.java}: Respectively the interface and the class used to model the access method to DB and its tables.\\
 It uses two static factory method instead of constructor, these methods, \\ \texttt{getRemoteConnection()} and \texttt{getLocalConnection()}, are static methods that returns an instance of the class with some specific settings for environment, like address, username and password used to connect to DB. One advantage of this pattern is that in this way it has name, in this case it was useful for specifying the criteria to choose the connection (local or remote).\\
 As specified in previous chapters the DAO pattern was used for Data Access Layer. Since the DBConnectionImpl class is the one that keeps the general information about the database, information about DB tables are also maintained here, like its relative DAO. Here is maintained the enum with all table's name and the method \texttt{GenericDaoAbstract getDAO(final Table table)} which is a factory that returns the Dao relative to that table.\\
 
-And the packages:\\
+And the following packages:\\
 
 \subsubsection{DAO classes}
-\texttt{dao}: It contains all DAO with their interfaces as specified in detailed design chapter.\\
-%TODO fix: add link
+\texttt{dao}: It contains all DAO with their interfaces as specified in design chapter.\\
 \includegraphics[width=\textwidth]{figures/ClassDiagram.jpg}
 The DAOs are organized as specified in the partial class diagram above. Inheritance and template methods are used to group similar DAOs. The three main DAO's are GenericDao, LoggableDao, UpdatableDao. The GenericDao is the main class from which all others DAO extends, it contains the template methods insert, delete, selectByIdentifier, insertAndGet with abstract methods to be implemented in the classes that extend it.\\
 The UpdatableDao contains the template method update, the LoggableDao contains the template method login and the abstract methods are:
@@ -467,9 +457,8 @@ The UpdatableDao contains the template method update, the LoggableDao contains t
 An example of a particular DAO is CpEnrollment, its method \\
 \texttt{List<RescueTeam> findAllRescueTeamGivenACp(String cpID, boolean related)} has the parameter \textit{related} that is the criteria used to choose the query, since for the CpEnrollment we need both methods \texttt{findAllRescueTeamRelatedToACp} and \\
 \texttt{findAllRescueTeamNotRelatedToACp}, with both returning a list of RescueTeam objects that differs only for the query. \\
-Every DAO concrete class has been tested trying to isolate single pieces of the code. Following in broad terms the Test-Driven-Development, JUnit simple test classes have been written before each DAO class, and, in order to respect design principle also in test classes, these classes have been refactored. They can be found under the\\ \texttt{server/src/test/java/it/unibo/drescue/database} package.\\
+Every DAO concrete class has been tested trying to isolate single pieces of the code. Following in broad terms the Test-Driven-Development, JUnit simple test classes have been written before each DAO class, and, in order to respect design principle also in test classes, these classes have been refactored. They can be found under the package\\ \texttt{server/src/test/java/it/unibo/drescue/database}.\\
 
-%TODO check
 \subsubsection{DB initialization classes}
 \texttt{helper}: It contains the class DBInitializationStart used to initialize DB with static tables contents and some other data contained in externals file, to have something to start with.
 The externals file are located in \textit{server/res}. The DBinitialization interface has a method used to insert into DB all objects listed in a json file, with a parameter \textit{table} that indicates the criteria, so in which table it has to be inserted, and the \textit{pathFile} that indicates the path where the file with objects is located.
