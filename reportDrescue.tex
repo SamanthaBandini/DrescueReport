@@ -48,28 +48,44 @@ Each civil protection manages a single district, but each rescue team can join d
 \section{Development methodology}
 
 To manage product development we were inspired by Scrum framework, an iterative and incremental agile software development methodology.
-According to Scrum method we decided to have face-to-face meeting as often as possible and when not possible due to personal commitments we planned meeting via VoIP.
+According to Scrum method we decided to have face-to-face meetings as often as possible and when not possible due to personal commitments we planned meetings via VoIP.
 
 We have chosen Sofia Rosetti as Product Owner but we proceeded working together and giving always advices and ideas each others.
 
-Despite commitments we tried to organize face-to-face meetings at least once every two weeks, most frequently in the first and last period. So, working at home, we tried to follow the following meeting mode.
+Despite commitments, we tried to organize face-to-face meetings at least once every two weeks, most frequently in the first and last period. So, working at home, we tried to follow the following meeting mode.
 
 Every morning teams member available to work on that day had a morning meeting (few minutes) via VoIP or, most frequently, via instant chat, to plan the daily job.
 Often, in addition to that concise morning meeting, we made a brief evening meeting to aware others members about problems encountered or doubts during work.
 
 We planned Sprint meeting (in addition to the specified daily meetings) as follows.
 
-Before each sprint, a sprint planning was organized (max one hour) in which all group members were present. At the end of each sprint, we all met together again to do sprint reviews and sprint retrospectives. Except for the first sprint, these two operations took place on the same day.\\
+Before each Sprint, a sprint planning was organized (max one hour) in which all group members were present. At the end of each Sprint, we all met together again to do Sprint reviews and Sprint retrospectives. Except for the first Sprint, these two operations took place on the same day.\\
 During the Sprint Review meeting one member at time presented to the others in a few minutes what was done, even with brief examples.
 
-Unfortunately, due to external commitments or personal reasons every member couldn't dedicate only to this single project. For this reasons, we couldn't even split equally the tasks between members for every sprint or split every sprints with equal amount of hours.
+Unfortunately, due to external commitments or personal reasons every member couldn't dedicate only to this single project. For this reasons, we couldn't even split equally the tasks between members for each Sprint or split them with equal amount of hours.
 
-So, sprints management has been carried out in a flexible way, 
-as we can see in the product backlog that can be found together with the release 
+So, Sprints' management has been carried out in a flexible way, 
+as we can see in the product backlog that can be found together with the release. 
 
 We tried to mantain a product backlog evolving during time and we chose working hours as valuation.
 
 During Sprint planning we compiled a quite generic list fo Sprint tasks, which was redefined and perfectioned when chosen.
+
+An example of how we managed tasks partition and hours count can be seen in Figures \ref{fig:Trello} and \ref{fig:Calendar}.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{figures/Trello.png}
+\caption{Trello board for Sprint 5}
+\label{fig:Trello}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{figures/Calendar.png}
+\caption{Google Calendar hours count}
+\label{fig:Calendar}
+\end{figure}
 
 \section{Development tools}
 Following development support tools have been used:
@@ -94,7 +110,7 @@ Following development support tools have been used:
 
 \section{Functional requirements}
 
-According to agile methodologies in the first sprint we wrote user cases like ``As.. I want.. For..", which have highlighted these functional requirements:
+According to agile methodologies in the first Sprint we wrote user cases like ``As.. I want.. For..", which have highlighted these functional requirements:
 
 \begin{itemize}
 \item \textbf{User side}:
@@ -145,8 +161,8 @@ Non-functional requirements have been identified as following:
 The system's components, shown in figure \ref{fig:ArchDesign}, are:
 
 \begin{itemize}
-\item a \textbf{mobile application}, whose main purpose is sending alerts to report natural disasters;
-\item a \textbf{desktop application}, whose main purpose is monitoring natural disasters and coordinate rescues;
+\item a \textbf{mobile application}, which main purpose is sending alerts to report natural disasters;
+\item a \textbf{desktop application}, which main purpose is monitoring natural disasters and coordinate rescues;
 \item a \textbf{remote server}, that communicates with clients to send responses and forward alerts to right civil protections;
 \item a \textbf{remote database}, that stores all system data. Only the server can access to the database and retrieve data depending on the requests;
 \item \textbf{RabbitMQ}, a message broker that allows communications among clients and between clients and server.
@@ -178,11 +194,11 @@ As shown in Figure \ref{fig:MVC}, MVC has been arranged with a major controller 
 Data Access Object (DAO) is a commonly used pattern to persist domain objects into a database. The most common form of a DAO pattern is a class that contains CRUD methods for a particular domain entity type.
 The pattern has these advantages:
 \begin{itemize}
-\item It separates the domain logic that use it from any particular persistence mechanism or APIs.
-\item The interface methods signature are independent of the content of the implementation class. When you add a field to the Object of DAO, you don’t need to change the interface nor its callers.
+\item It separates the domain logic that uses it from any particular persistence mechanism or APIs.
+\item The interface methods signatures are independent of the content of the implementation class. When you add a field to the Object of DAO, you don’t need to change the interface nor its callers.
 \end{itemize}
 
-A better pattern is Repository, it uses a metaphor of a Collection. This metaphor gives the pattern a tight contract and make it easier to understand.
+A better pattern is Repository, it uses a metaphor of a Collection. This metaphor gives the pattern a tight contract and makes it easier to understand.
 
 In addition in this case, inheritance, abstract classes, and template methods are used to avoid duplicate code since all models need some common methods, this will be discussed in the next chapters.
 So we have a GenericDAO, with the basic methods, from which all other DAOs extends.
@@ -196,20 +212,20 @@ Making this change you avoid to expose the type of ObjectModel identity to the i
 In our case Repository pattern is realized with DAO.
 
 \subsection{RabbitMQ Broker}
-It was decided to adopt the Message-Oriented Middleware(MOM) RabbitMQ for the following reasons
+It was decided to adopt the Message-Oriented Middleware (MOM) RabbitMQ for the following reasons:
 \begin{itemize}
 \item \textbf{Decoupling}: messages can be exchanged between system components which have been placed on the same or different network.
 \item \textbf{Flexibility}: heterogeneous integration between technology stack and different types of clients is guaranteed by AMQP (Advanced Message Queuing Protocol implemented by RabbitMQ) whose main responsibility is the interoperability of the systems inside the messaging systems.
 \item \textbf{Scalability}: system can scale horizontally easily by adding new Consumer.
 \end{itemize}
 
-A message producer produces messages and send them to the Message Broker which
-routes messages to the right consumers. A message consumer await the upcoming messages, then process the information in them.
+A message producer produces messages and sends them to the Message Broker which
+routes messages to the right consumers. A message consumer await the upcoming messages, then processes the information in them.
 
 \subsubsection{Point-to-Point}
-Point-to-Point communication has been used in communicating with the server where more clients can potentially send messages to a queue on which a server consumer of a specific service is waiting for messages.
+Point-to-Point communication has been used for communicating with the server where more clients can potentially send messages to a queue on which a server consumer of a specific service is waiting for messages.
 
-When the server receives a message it is processed and the result can be 
+When the server receives a message, it is processed and the result can be 
 \begin{itemize}
 \item sent as a response 
 \begin{figure}[ht]
@@ -231,10 +247,10 @@ When the server receives a message it is processed and the result can be
 Publish/Subscribe communication has been used to send a message to multiple clients with consumer consuming on the same queue. 
 Messages are not published directly to a queue, instead, the producer sends messages to an exchange.
 An exchange is responsible for the routing of the messages to the different queues. 
-The routing key is a message attribute added into the message header by the producer and it can be seen as an "address" that the exchange use to decide how to route the message. 
+The routing key is a message attribute added into the message header by the producer and it can be seen as an ``address'' that the exchange uses to decide how to route the message. 
 A message goes to the queue(s) whose binding key exactly matches the routing key of the message.
-Subscribers needs to bind to the exchange in order to receive messages.
-This is used when a civil protection notice all the other civil protecions about the availability of a specific rescue team.
+Subscribers need to bind to the exchange in order to receive messages.
+This is used when a civil protection notices all other civil protecions about the availability of a specific rescue team.
 
 \begin{figure}[ht]
 \centering
@@ -268,13 +284,13 @@ The second main screen allows a logged user to reach the screens to see all the 
 
 \subsection{Civil Protection}
 
-The graphical user interface for civil protection desktop application has been designed in order to allow civil protection users to receive real-time updates and to perform all actions relative to enroll a new rescue team and start or stop a rescue for a specific alert. This requires the existence of view where last alerts are shown, and a more specific view in which civil protection users can see which rescue teams are available and which are occupied. A rescue team can be occupied by different civil protections, so the system has been designet to let users know which civil protection started the rescue and when it ends.
+The graphical user interface for civil protection desktop application has been designed in order to allow civil protection users to receive real-time updates and to perform all actions relative to enroll a new rescue team and start or stop a rescue for a specific alert. This requires the existence of a view where last alerts are shown, and a more specific view in which civil protection users can see which rescue teams are available and which are occupied. A rescue team can be occupied by different civil protections, so the system has been designed to let users know which civil protection started the rescue and when it ends.
 
 Civil protection application mockups are shown in Figure \ref{fig:CPmockup}.
 
 When civil protection application starts, the first shown screen is the login one, where there's the need to insert the specific civil protection username and password.
 
-Once logged, the home screen allows to see the last fifty alerts relative to the civil protection operating area. If a new alert is send, the view automatically updates showing it at the top of the list, because it's the most recent one. This also happens if a new upvote is send, so the upvoted alert is moved at the top of the list.
+Once logged, the home screen allows to see the last alerts relative to the civil protection operating area. If a new alert is sent, the view automatically updates showing it at the top of the list, because it's the most recent one. This also happens if a new upvote is sent, so the upvoted alert is moved at the top of the list.
 
 From the home view, clicking on the ``\textit{Enroll team}'' button, there is the possibility to enroll a new rescue team. On the left side of the screen a list containing existing but not enrolled teams is present, while on the right side there is the possibility to register a not already existing rescue team with all relative data. With the ``\textit{Add}'' button, the new rescue team is stored into the database, and the relative left list is updated, allowing the user to select the team in order to enroll it.
 
@@ -292,12 +308,11 @@ To manage rescues in order to stop a rescue if necessary, civil protection users
 \section{Code organization}
 The code is contained within the same project organized in modules:
 \begin{itemize}
-\item \textbf{civilprotection} contains the civil protection application, which is organized according to the MVC pattern. 
-\item \textbf{mobileuser} contains the Android application 
-\item \textbf{server} contains the classes related to server services and database.
-\item \textbf{utils} contains the classes related to geocoding and geodeconding operations as well as the messages exchanged between server and civil protections; this module is imported by the civil protection and server one. 
-\item \textbf{utils-java} contains only Java code and it is imported by all the other modules.
-Contains 
+\item \textbf{civilprotection} contains the civil protection application, which is organized according to the MVC pattern; 
+\item \textbf{mobileuser} contains the Android application; 
+\item \textbf{server} contains the classes related to server services and database;
+\item \textbf{utils} contains the classes related to geocoding and geodecoding operations as well as the messages exchanged between server and civil protections. This module is imported by the civil protection and server one; 
+\item \textbf{utils-java} contains only Java code and it is imported by all the other modules. It contains: 
 \begin{itemize}
 \item the model of the entire project
 \item the classes used to manage the connection to RabbitMQ broker
@@ -309,14 +324,14 @@ Contains
 
 Some package names are repeated within the various modules and contain classes that have the same usefulness. The most used are
 \begin{itemize}
-\item package \texttt{connection} which contains the classes that deals with the connection to the RabbitMQ broker
-\item package \texttt{communication} which contains the classes that deals with messages exchanged among the system components
+\item package \texttt{connection} which contains the classes that deal with the connection to the RabbitMQ broker
+\item package \texttt{communication} which contains the classes that deal with messages exchanged among the system components
 \end{itemize}
 
 \section{Server and Database}
-It was decided to use a remote server and a remote database, both hosted by Amazon AWS, to have instances always available and accessible from everyone as the system it was designed to be of public utility.
+It was decided to use a remote server and a remote database, both hosted by Amazon AWS, to have instances always available and accessible from everyone, as the system was designed to be of public utility.
 
-More specifically the remote server is running on an EC2 instance (t2.micro) where a service always keeps it alive. The remote database is hosted on an RDS instance, accessed only from the server instance. It was decided to use MySQL because of previous knowledge of the relational model.
+More specifically, the remote server is running on an EC2 instance (t2.micro) where a service always keeps it alive. The remote database is hosted on an RDS instance, accessed only from the server instance. It was decided to use MySQL because of previous knowledge of the relational model.
 
 \section{Patterns}
 \begin{itemize}
@@ -352,7 +367,7 @@ As it was decided to use a Message-Oriented Middleware it was necessary to defin
 \label{fig:messageStruct}
 \end{figure}
 
-The tables below show the messages that are exchanged using point-to-point communication.
+The tables below shows the messages that are exchanged using point-to-point communication.
 
 Mobile user - server communication:
 
@@ -434,41 +449,51 @@ In the DRescue project, Samantha Bandini contribution was mainly related to desi
 
 \subsection{Data Access Layer}
 
-Our application must access a database, so it needed some logic to handle database access. In order to keep the code clean and modular, the database access logic is isolated into \texttt{server/src/main/java/it/unibo/drescue/database} package. This package contains:
+Our application must access a database, so it needed some logic to handle database access. In order to keep the code clean and modular, the database access logic is isolated into \texttt{server/src/main/java/it/unibo/drescue/database} package, which contains the following elements.
 
 \subsubsection{DB connection classes}
-\texttt{DBConnection.java} and \texttt{DBConnectionImpl.java}: Respectively the interface and the class used to model the access method to DB and its tables.\\
-It uses two static factory method instead of constructor, these methods, \\ \texttt{getRemoteConnection()} and \texttt{getLocalConnection()}, are static methods that returns an instance of the class with some specific settings for environment, like address, username and password used to connect to DB. One advantage of this pattern is that in this way it has name, in this case it was useful for specifying the criteria to choose the connection (local or remote).\\
-As specified in previous chapters the DAO pattern was used for Data Access Layer. Since the DBConnectionImpl class is the one that keeps the general information about the database, information about DB tables are also maintained here, like its relative DAO. Here is maintained the enum with all table's name and the method \texttt{GenericDaoAbstract getDAO(final Table table)} which is a factory that returns the Dao relative to that table.\\
+\texttt{DBConnection.java} and \texttt{DBConnectionImpl.java} are respectively the interface and the class used to model the access method to DB and its tables.
 
-And the following packages:\\
+It uses two static factory methods instead of constructor. These methods, \\ \texttt{getRemoteConnection()} and \texttt{getLocalConnection()}, are static methods that return an instance of the class with some specific settings for environment, like address, username and password used to connect to DB. One advantage of this pattern is that in this way it has name, in this case it was useful for specifying the criteria to choose the connection (local or remote).
+
+As specified in previous chapters the DAO pattern was used for Data Access Layer. Since the DBConnectionImpl class is the one that keeps the general information about the database, information about DB tables are also maintained here, like its relative DAO. Here is maintained the enum with all table's name and the method \texttt{GenericDaoAbstract getDAO(final Table table)} which is a factory that returns the Dao relative to that table.
 
 \subsubsection{DAO classes}
-\texttt{dao}: It contains all DAO with their interfaces as specified in design chapter.\\
+\texttt{dao package}: It contains all DAO with their interfaces as specified in design chapter.
+
+\begin{figure}[ht]
+\centering
 \includegraphics[width=\textwidth]{figures/ClassDiagram.jpg}
-The DAOs are organized as specified in the partial class diagram above. Inheritance and template methods are used to group similar DAOs. The three main DAO's are GenericDao, LoggableDao, UpdatableDao. The GenericDao is the main class from which all others DAO extends, it contains the template methods insert, delete, selectByIdentifier, insertAndGet with abstract methods to be implemented in the classes that extend it.\\
+\caption{Class Diagram}
+\label{fig:ClassDiagram}
+\end{figure}
+
+The DAOs are organized as specified in the partial class diagram in Figure \ref{fig:ClassDiagram}. 
+
+Inheritance and template methods are used to group similar DAOs. The three main DAO's are \textit{GenericDao}, \textit{LoggableDao}, \textit{UpdatableDao}. The GenericDao is the main class from which all others DAO extend, it contains the template methods insert, delete, selectByIdentifier, insertAndGet with abstract methods to be implemented in the classes that extend it.
 The UpdatableDao contains the template method update, the LoggableDao contains the template method login and the abstract methods are:
 \begin{itemize}
-\item \texttt{String getQuery(final QueryType queryType)} Given a query type it returns the prepared query (a composed string) for this object
-\item \texttt{PreparedStatement fillStatement(final ObjectModel objectModel, \\final PreparedStatement statement, final QueryType queryType)}: Given an object and a prepared statement it returns that prepared statement filled with the useful information to execute the specified query
-\item \texttt{ObjectModel mapRecordToModel(ResultSet resultSet)} Get an object from a resultSet given, obtained from a select query by identifier
+\item \texttt{String getQuery(final QueryType queryType)}: given a query type it returns the prepared query (a composed string) for this object
+\item \texttt{PreparedStatement fillStatement(final ObjectModel objectModel, \\final PreparedStatement statement, final QueryType queryType)}: given an object and a prepared statement it returns that prepared statement filled with the useful information to execute the specified query
+\item \texttt{ObjectModel mapRecordToModel(ResultSet resultSet)}: gets an object from a resultSet given, obtained from a select query by identifier
 \end{itemize}
 
-An example of a particular DAO is CpEnrollment, its method \\
-\texttt{List<RescueTeam> findAllRescueTeamGivenACp(String cpID, boolean related)} has the parameter \textit{related} that is the criteria used to choose the query, since for the CpEnrollment we need both methods \texttt{findAllRescueTeamRelatedToACp} and \\
-\texttt{findAllRescueTeamNotRelatedToACp}, with both returning a list of RescueTeam objects that differs only for the query. \\
-Every DAO concrete class has been tested trying to isolate single pieces of the code. Following in broad terms the Test-Driven-Development, JUnit simple test classes have been written before each DAO class, and, in order to respect design principle also in test classes, these classes have been refactored. They can be found under the package\\ \texttt{server/src/test/java/it/unibo/drescue/database}.\\
+An example of a particular DAO is CpEnrollment: its method \texttt{List<RescueTeam>} \texttt{findAllRescueTeamGivenACp(String cpID, boolean related)}
+has the parameter \textit{related} that is the criteria used to choose the query, since for the CpEnrollment we need both methods \texttt{findAllRescueTeamRelatedToACp} and \texttt{findAllRescueTeamNotRelatedToACp}, with both returning a list of RescueTeam objects that differs only for the query.
+
+Every DAO concrete class has been tested trying to isolate single pieces of the code. Following in broad terms the Test-Driven-Development, JUnit simple test classes have been written before each DAO class, and, in order to respect design principle also in test classes, these classes have been refactored. They can be found under the package\\ \texttt{server/src/test/java/it/unibo/drescue/database}.
 
 \subsubsection{DB initialization classes}
-\texttt{helper}: It contains the class DBInitializationStart used to initialize DB with static tables contents and some other data contained in externals file, to have something to start with.
-The externals file are located in \textit{server/res}. The DBinitialization interface has a method used to insert into DB all objects listed in a json file, with a parameter \textit{table} that indicates the criteria, so in which table it has to be inserted, and the \textit{pathFile} that indicates the path where the file with objects is located.
+\texttt{helper package}: it contains the class DBInitializationStart used to initialize DB with static tables contents and some other data contained in externals file, to have something to start with.
+The external files are located in \textit{server/res}. The DBinitialization interface has a method used to insert into DB all objects listed in a json file, with a parameter \textit{table} that indicates the criteria, so in which table it has to be inserted, and the \textit{pathFile} that indicates the path where the file with objects is located.
 
-To initialize the DB in this way, it was created in utils-java module, in package \texttt{src/main/java/it/unibo/drescue/database} a class \texttt{JsonFileUtils.java} with the generic method \texttt{<T> List<T> getListFromJsonFile(final String path, \\final Class<T[]> type)} that get a generic list of objects from a json file indicating the path of the file and the type of the class of the object to get.
+To initialize the DB in this way, it was created in utils-java module, in package \texttt{src/main/java/it/unibo/drescue/database}, a class \texttt{JsonFileUtils.java} with the generic method \texttt{<T> List<T> getListFromJsonFile(final String path, \\final Class<T[]> type)} that gets a generic list of objects from a json file indicating the path of the file and the type of the class of the object to get.
 
 \subsubsection{Travis configuration for mysql}
 Tests that cover the database part must be run locally, so that they do not act on the remote database that is being used by the real application, but on a copy of this in local environment.
-To do this, we had to prepare a .sql document to initialize all db tables and each of us, on a machine where SQL Server and SQL Workbench were installed, ran this file locally.
-The problem came up when these tests had to be run in Travis. In addition to add the mysql service to the .travis.yml file, it was necessary to configure the credentials for Travis like in our local environment and also to create the DB with all tables. \\\
+To do this, we had to prepare a .sql document to initialize all database tables and each of us, on a machine where SQL Server and SQL Workbench were installed, ran this file locally.
+The problem came up when these tests had to be run in Travis. In addition to add the mysql service to the .travis.yml file, it was necessary to configure the credentials for Travis like in our local environment and also to create the DB with all tables.
+
 These rows has been added to .travis.yml file:\\
 \texttt{before}\textunderscore\texttt{install:}\\
 \texttt{- mysql -u root --password="" < travis.sql}
@@ -482,9 +507,9 @@ The code mentioned in this section is available in the \texttt{mobileuser} modul
 \subsubsection{GPS}
 GPS is a very important component within the application, as it is useful to indicate the exact location from which a user alert is sent and also to display all the alerts in the area where the user is located.
 
-So, the application must have permissions to access the GPS, because the GPS is a sensitive data and it need to have the explicit consent of the user to be able to use it. Also, the device must have the GPS activated, because otherwise it would not be possible to understand where the user is and the latitude and longitude values could not be obtained.
+So, the application must have permissions to access the GPS, because the GPS is a sensitive data and it needs the explicit consent of the user to be able to use it. Moreover, the device must have the GPS activated, because otherwise it would not be possible to understand where the user is and the latitude and longitude values could not be obtained.
 
-The package \texttt{gps} contains an activity has been defined in which the required permissions and presence of the GPS provider are checked during creation and resume of activity. It also provides the latitude and longitude values, but if they aren't available it is setted a specific message. Using the \emph{observer} pattern, the activity is notified when the latitude and longitude values change or when the provider is disabled.
+The package \texttt{gps} contains an activity in which the required permissions and presence of the GPS provider are checked during creation and resume of activity. It also provides the latitude and longitude values, but if they aren't available a specific message is set. Using the \emph{observer} pattern, the activity is notified when the latitude and longitude values change or when the provider is disabled.
 
 This activity is extended by all those activities that need to use the GPS, so that they can have the location values or check the provider.
 
@@ -492,10 +517,10 @@ This activity is extended by all those activities that need to use the GPS, so t
 Four activities have been implemented with the relevant layouts to allow the user to send a new report, view the profile, change their password and the home page of application.
 
 \begin{itemize}
-\item \texttt{NewAlertActivity} in the package \texttt{alert} is the main feature that the application has, because it must allow the user to report a natural disaster. The class extends the GPS activity, because it needs to know the latitude and longitude values to show to the user and comunicate them to the server. In the layout, in addition to GPS values, it is given to user the possibility to select the type of natural disaster that occurs, by choosing between those in the database. The list of possible natural disasters is downloaded only whenever the user logs in so as not to slow down the operation and is saved between shared preferences of device.
-\item \texttt{ProfileActivity} in the package \texttt{profile} shows the user data. The data are downloaded when the user logs in and they are saved in the shared preferences of the device. Each field is set by taking the value saved in the shared preferences that has a certain key. The keys that can be used are listed in the \texttt{PreferencesKey} enum in the package \texttt{utils}. From this activity is possible to reach the activity for change the profile password and do logout. The logout is very simple, just delete all the data saved in the shared preferences.
+\item \texttt{NewAlertActivity} in the package \texttt{alert} is the main feature that the application has, because it allows the user to report a natural disaster. The class extends the GPS activity, because it needs to know the latitude and longitude values to show to the user and comunicate them to the server. In the layout, in addition to GPS values, it is given to user the possibility to select the type of natural disaster that occurs, by choosing between those in the database. The list of possible natural disasters is downloaded only whenever the user logs in, so as not to slow down the operation, and it's saved between device shared preferences.
+\item \texttt{ProfileActivity} in the package \texttt{profile} shows the user data. The data are downloaded when the user logs in and they are saved in the shared preferences of the device. Each field is set by taking the value saved in the shared preferences that has a certain key. The keys that can be used are listed in the \texttt{PreferencesKey} enum in the package \texttt{utils}. From this activity it is possible to reach the activity for change the profile password and do logout. The logout is very simple, it just deletes all the data saved in the shared preferences.
 \item \texttt{ChangePasswordActivity} in the package \texttt{profile} allows the user to change his password. So, it is necessary to take the old and the new password, the user email and update his record on database. The layout shows three fields where the user can write. Each field must comply with two rules: the password must be at least 6 characters long and it must contain only alphanumeric characters.
-\item \texttt{MainActivity} shows a RecyclerView where the CardView are arranged in a grid. Each CardView contains a title, an icon and a string with the class name that must start at the click of the CardView. The titles, the icons and the strings are listed in \texttt{arrays.xml} in \texttt{res} folder in the form of array. In order to handle the RecyclerView, it was need to use the \emph{Observer} pattern, the \emph{Adapter} pattern and the \emph{ViewHolder} pattern. Using the \emph{Observer} pattern, it was possible to notify when the user click on a specific CardView and to open the relative activity. The \emph{ViewHolder} pattern has allowed to set the correct fields of each CardView and the \emph{adapter} pattern has been the bridge between activity and the ViewHolder. \texttt{MainActivity}, during its creation or its resume, controls that the shared preferences are not empty. If this is not the case, it means that the user has logged out, so it need to go back to \texttt{SplashActivity} where the user can log in again.
+\item \texttt{MainActivity} shows a RecyclerView where the CardView are arranged in a grid. Each CardView contains a title, an icon and a string with the class name that must start at the click of the CardView. The titles, the icons and the strings are listed in \texttt{arrays.xml} in \texttt{res} folder in the form of array. In order to handle the RecyclerView, there was the need to use the \emph{Observer} pattern, the \emph{Adapter} pattern and the \emph{ViewHolder} pattern. Using the \emph{Observer} pattern, it was possible to notify when the user clicks on a specific CardView and to open the relative activity. The \emph{ViewHolder} pattern has allowed to set the correct fields of each CardView and the \emph{adapter} pattern has been the bridge between activity and the ViewHolder. \texttt{MainActivity}, during its creation or its resume, controls that the shared preferences are not empty. If this is not the case, it means that the user has logged out, so it need to go back to \texttt{SplashActivity} where the user can log in again.
 \end{itemize}
 
 \subsubsection{Connection between authentication and profile activities and server}
@@ -503,12 +528,12 @@ After performing all the layouts and basic activity operations, the connection b
 
 The deployed connection is about authentication and profile activities. In all these cases, the type of communication is RPC, so all requests were made using \texttt{RabbitAsyncTask} class. The responses are \texttt{AbstractResponse}, so they were handled differently depending on what was needed to get. For more detailed explanation about \texttt{RabbitAsyncTask} and \texttt{AbstractResponse} see the dedicated section of developer Anna Giulia Leoni.
 
-First, it was necessary to create a message to be sent to the server in order to forward the request, then check the presence of the Internet connection (both through mobile and Wi-Fi connecition). This check was essential because forwarding a request without connection could cause an application crash. Also, being necessary to recive a response from the server, it has entered a progress dialog that blocks the user's activity until the application receives any response from the server.
+First, it was necessary to create a message to be sent to the server in order to forward the request, then check the presence of the Internet connection (both through mobile and Wi-Fi connection). This check was essential because forwarding a request without connection could cause an application crash. Moreover, being necessary to receive a response from the server, a progress dialog has been introduced in order to block the user's activity until the application receives any response from the server.
 
 \begin{itemize}
-\item \texttt{SignUpActivity} in package \texttt{authentication} was implemented by Anna Giulia Leoni and refactored by Elisa Casadio. The request message consists of all the data that the user has entered during the registration. The response message consists in a simple successful message, which confirm the database registration.
-\item \texttt{LoginActivity} in package \texttt{authentication} has the request message assembled by the credentials of user. The response message consists in a message with the user data and a list of natural disaster. All this data are saved in shared preferences to use them in future in some requests or in the application. It has preferred to have all essential information at the user login, because it has avoided slowing down the user when displaying some views, such as profile or new alert.
-\item \texttt{ChangePasswordActivity} in package \texttt{profile} has the request message assembled by the new and old password and the user email, the latter derived from shared preferences. The response message is a successful message, which confirm the update of password.
+\item \texttt{SignUpActivity} in package \texttt{authentication} was implemented by Anna Giulia Leoni and refactored by Elisa Casadio. The request message consists of all the data that the user has entered during the registration. The response message consists in a simple successful message, which confirms the database registration.
+\item \texttt{LoginActivity} in package \texttt{authentication} has the request message assembled by the credentials of user. The response message consists in a message with the user data and a list of natural disaster. All this data are saved in shared preferences to use them in future in some requests or in the application. It has been preferred to have all essential information at the user login, because in this way we avoided to slow down the user when displaying some views, such as profile or new alert.
+\item \texttt{ChangePasswordActivity} in package \texttt{profile} has the request message assembled by the new and old password and the user email, the latter derived from shared preferences. The response message is a successful message, which confirms the password update.
 \end{itemize}
 
 \subsubsection{Graphics}
@@ -518,14 +543,14 @@ To get a user-friendly application, the graphics were helpful. First, the basic 
 In this section, the service exposed is located in \texttt{server} module in \texttt{connection} package.
 
 \subsubsection{MobileuserService}
-\texttt{MobileuserService} is a case classe used to implement useful operations to access database when requests are made on \texttt{MOBILEUSER\_QUEUE}. This queue takes all the requests concerning authentication and profile management.
+\texttt{MobileuserService} is a case class used to implement useful operations to access database when requests are made on \texttt{MOBILEUSER\_QUEUE}. This queue takes all the requests concerning authentication and profile management.
 
 The service decides what to do depending on the type of message. Possible message types accepted are:
 \begin{itemize}
-\item \texttt{SIGN\_UP\_MESSAGE} is the message sends when a user is registered into the mobile application. The user data are extracted from the request message and the user is inserted as a new record in the database. If the insert process is successful, \emph{SuccessfulMessage} is returned, otherwise, if an error occurs, it is captured. The email must be unique, so if it is duplicated, \emph{ErrorMessage} with a particular message is returned. This operations are implemented by developer Anna Giulia Leoni and refactored by developer Elisa Casadio.
-\item \texttt{LOGIN\_MESSAGE} is the message sends when a user try to login into the mobile application. The user email and password are extracted from the request message and the user is searched into the user table of database. If the user is found, \emph{ResponseLoginMessage} is sent with all user data and a list of natural disaster, otherwise \emph{ErrorMessage} is sent, because email or password is wrong. If an error occurs, it is captured.
-\item \texttt{CHANGE\_PASSWORD\_MESSAGE} is the message sends when a user wants change the password of his account. The user email, old password and new password are extracted from the request message. The user is searched into the user table of database, the old password send is compared with the real password and the user data are updated.
-\item \texttt{REQUEST\_PROFILE\_MESSAGE} is usefull to get the profile of user. It is implemented for a future functionality. The user email is extracted from message and the user is searched into the user table. If the user is present, \emph{ProfileMessage} is sent with all the user data.
+\item \texttt{SIGN\_UP\_MESSAGE}: it's the message sent when a user is registered into the mobile application. The user data are extracted from the request message and the user is inserted as a new record in the database. If the insert process is successful, \emph{SuccessfulMessage} is returned, otherwise, if an error occurs, it is captured. The email must be unique, so if it is duplicated, \emph{ErrorMessage} with a particular message is returned. This operations have been implemented by developer Anna Giulia Leoni and refactored by developer Elisa Casadio.
+\item \texttt{LOGIN\_MESSAGE}: it's the message sent when a user try to login into the mobile application. The user email and password are extracted from the request message and the user is searched into the user table of database. If the user is found, \emph{ResponseLoginMessage} is sent with all user data and a list of natural disaster, otherwise \emph{ErrorMessage} is sent, because email or password is wrong. If an error occurs, it is captured.
+\item \texttt{CHANGE\_PASSWORD\_MESSAGE}: it's the message sent when a user wants to change the password of his account. The user email, old password and new password are extracted from the request message. The user is searched into the user table of database, the old password sent is compared with the real password and the user data are updated.
+\item \texttt{REQUEST\_PROFILE\_MESSAGE}: it is useful to get the profile of user. It is implemented for a future functionality. The user email is extracted from message and the user is searched into the user table. If the user is present, \emph{ProfileMessage} is sent with all the user data.
 \end{itemize}
 
 This service is tested with \texttt{scalatest} in class \texttt{MobileuserServiceTest} in the \texttt{connec-\\tion} package. For each type of message, the connection with a local instance of database is opened and operations of insert or update are run. Each test checks if the message type is the type expected. At the end, the fake user is deleted and the connection with database is closed.
@@ -534,7 +559,7 @@ This service is tested with \texttt{scalatest} in class \texttt{MobileuserServic
 In the DRescue project, Martina Giovanelli contribution was mainly related to design and implementation of communication between civil protections by way of the exchange of JSON messages and the management of rescue teams.
 \subsection{Communication between civil protections}
 Every civil protection maintain the condition of the rescue teams it has enrolled in in his local memory. 
-When the civil protection receives a new alert it must communicate with each others in order to decide which rescue team send to solve the occured natural disaster reported by the users.\\
+When the civil protection receives a new alert it must communicate with other civil protections in order to decide which rescue team send to solve the occured natural disaster reported by the users.\\
 The rescue teams are shared among the different civil protections so, before select one, they must coordinate with others to recover the picked team status and update their local model.\\
 The messages \texttt{ReplyRescueTeamConditionMessage} and\\ \texttt{ReqRescueTeamConditionMessage} inside \texttt{civilprotection} module are exchanged between the different civil protection respectively to request and send the condition of a particular rescue team.\\
 
@@ -545,11 +570,11 @@ Communication between processes is based on the following assumptions:
 \begin{itemize}
 \item Processes communicate by reading and writing variables through the exchange of messages.
 \item The delay of sending a message is unpredictable but finished.
-\item The channel be reliable. A sent message is received correctly from its recipient. There are no duplications or spurious messages (received but never transmitted). 
+\item The channel is reliable. A sent message is received correctly from its recipient. There are no duplications or spurious messages (received but never transmitted). 
 \item The process do not fail. 
 \end{itemize}
 
-For the implementation of this algorithm two other message have been used:
+For the implementation of this algorithm two other messages have been used:
 \begin{itemize}
 \item \texttt{ReqCoordinationMessage}
 To request a rescue team, the civil protection sends a timestamped message to all processes.
@@ -560,18 +585,22 @@ Civil protection is granted the resource when it has requested the resource and 
 process in response to its request message.\\
 
 The class \texttt{CoordinatorImpl} and the respective interface \texttt{Coordinator} inside the package \texttt{civilprotection/src/main/java/it/unibo/drescue/utils} represent a singleton used for the implementation of the above algorithm.\\
-In particolar this class keeps the process status in relation to the critical section: \texttt{wanted}, \texttt{held} and \texttt{detached}.\\
-The condition of the coordinator is equal to \texttt{wanted} when the civil protection wants to enter into critical section and updated the status of one  its rescue team. 
-In this case the coordinator also maintains the timestamp of the request, the list ID of the civil protection from which the process expect an replay message and the critical section's name which corresponds exactly to the name of the rescue team.\\
-The coordinator's condition is equal to \texttt{held} when the process is into critical section and \texttt{detached} when the civil protection isn't interested to occupied one team.\\
-The coordinator keep the civil protection's condition for only one critical section.\\
+In particular, this class keeps the process status in relation to the critical section: \texttt{wanted}, \texttt{held} and \texttt{detached}.
+
+The condition of the coordinator is equal to \texttt{wanted} when the civil protection wants to enter into critical section and to update the status of one of its rescue team. 
+In this case the coordinator also maintains the timestamp of the request, the list ID of the civil protection from which the process expects n replay message and the critical section's name which corresponds exactly to the name of the rescue team.
+
+The coordinator's condition is equal to \texttt{held} when the process is into critical section and \texttt{detached} when the civil protection isn't interested to occupied one team.
+The coordinator keeps the civil protection's condition for only one critical section.\\
 
 \subsection{Rescues management}
-Individual contribution in civil protection Model-View-Controller was mainly concerned the management of the rescue team into \texttt{ManageRescuesControllerImpl} class and the handle of the  messages received from other civil protection.\\
-When the civil protection wants to occupied a rescue team it sends a  broadcast message to other civil protections that has enrolled in the same rescue team in order to received their local condition.
-It waits until it received all the reply message or received a reply that inform it that the rescue team is already occupied.
-In the first case the civil protection can occupied the rescue team in the other it must choose another team.\\
-When civil protection wants to stopped the rescue team it update its local  condition from occupied to available and send a message to other civil protection to inform them about the updated team status.\\
+Individual contribution in civil protection Model-View-Controller was mainly concerned the management of the rescue team into \texttt{ManageRescuesControllerImpl} class and the handle of the  messages received from other civil protection.
+
+When the civil protection wants to occupy a rescue team it sends a broadcast message to other civil protections that has enrolled in the same rescue team in order to receive their local condition.
+It waits until it receives all the reply messages or receives a reply that informs it that the rescue team is already occupied.
+In the first case the civil protection can occupy the rescue team, in the other case it must choose another team.
+
+When civil protection wants to stop the rescue team, it updates its local condition from occupied to available and sends a message to other civil protection to inform them about the updated team status.
 
 \section{Anna Giulia Leoni}
 
@@ -640,6 +669,7 @@ In the DRescue project, Sofia Rosetti contribution was mainly related to design 
 \item Model interfaces and classes
 \item Civil protection views
 \item Civil protection Model-View-Controller
+\item Handle model in civil protection module and handle communication from civil protection to server in collaboration with Samantha Bandini
 \end{itemize}
 
 \subsection{Geocoding and reverse geocoding management}
