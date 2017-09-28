@@ -319,7 +319,7 @@ This is used when a civil protection notice all the other civil protecions about
 \section{Code organization}
 The code is contained within the same project organized in modules.
 \begin{itemize}
-\item \textbf{civilprotection} module contains the civil protection application which is organized according to the MVC pattern
+\item \textbf{civilprotection} module contains the civil protection application, which is organized according to the MVC pattern. 
 \item \textbf{mobileuser} module contains the Android application 
 \item \textbf{server} %contiene il codice dei servizi del server
 \item \textbf{utils} module %TODO contiene il codice per eseguire le operazioni di geocoding e geodecoding ed i messaggi che le protezioni civili possono scambiare con il server 
@@ -337,22 +337,23 @@ Indecise con no sql poi scelto mysql perché db parecchio grande e per avere sic
 \item Builder: the builder pattern was used for model classes and those of messages that had more than 2-3 arguments at constructor.
 \item Template Method: the template method pattern was used in handling server response in case of RPC and to group similar objects with common methods in accessing database.
 \item Singleton: utilizzato per il coordinator %TODO
-\item View-Holder: the view-holder pattern was used into Android adapter to stores each of the component views inside the tag field of the Layout in order to access them without the need to look them up repeatedly. %TODO check!!!
-\item Static factory: utilizzato per la creazione della connessione al database %TODO
-\item Factory pattern: utilizzato per recuperare i dao delle relative tabelle del database %TODO
-\item Observer: used to manage the view update as a result of model changes %TODO mettere una lista di observer observable?
+\item View-Holder: the view-holder pattern was used into Android adapter to store each of the component views inside the tag field of the Layout in order to access them without the need to look them up repeatedly. %TODO check!!!
+\item Static factory: the static factory pattern has been used to create database connection. %TODO check
+\item Factory pattern: the factory pattern has been used to retrieve the DAOs of database tables. %TODO check
+\item Observer: used to manage the view update as a result of model changes. %TODO mettere una lista di observer observable?
 \end{itemize}
 
 \section{Communication messages}
-
-Diagrammi di sequenza per RPC e forward + comunicazione tra CP
-%TODO add images
+As it was decided to use a Message-Oriented Middleware it was necessary to define a template for the many messages exchanged between system components. It is shown in figure \ref{fig:messageStruct}.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[scale=0.5]{figures/messages.png}
 \caption{Base messages structure}
+\label{fig:messageStruct}
 \end{figure}
+
+The tables below show the messages that are exchanged using point-to-point communication.
 
 Mobile user - server communication:
 
@@ -388,6 +389,24 @@ Get not enrolled rescue teams & GetRescueTeamsNot EnrolledMessage	& RescueTeamsM
 \hline
 \end{tabular}
 \end{center}
+
+The sequence diagrams in figure \ref{fig:seqRPC} and \ref{fig:seqForward} show two examples of successful scenarios respectivly for the response case and the forward one.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.5]{figures/seqRPC.png}
+\caption{Response Sequence Diagram}
+\label{fig:seqRPC}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.5]{figures/seqForward.png}
+\caption{Forward Sequence Diagram}
+\label{fig:seqForward}
+\end{figure}
+
+The table below shows the messages that are exchanged using publish/subscribe communication.
 
 Civil protection - Civil protection communication:
 
