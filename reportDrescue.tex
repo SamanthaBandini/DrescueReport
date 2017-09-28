@@ -4,6 +4,7 @@
 \usepackage[english]{babel}
 \usepackage[pdftex]{graphicx} 
 \usepackage{listings}
+\newcommand\tab[1][2cm]{\hspace*{#1}}
 %\setcounter{secnumdepth}{5}
 %\setcounter{tocdepth}{3}
 \graphicspath {{figures/}}
@@ -44,16 +45,13 @@ Each civil protection manages a single district, but each rescue team can join d
 
 \chapter{Software development process}
 
-(modalità di divisione in itinere dei task, meeting/interazioni pianificate, modalità di revisione in itinere dei task, scelta degli strumenti di test/build/continuous integration)\\
+%(modalità di divisione in itinere dei task, meeting/interazioni pianificate, modalità di revisione in itinere dei task, scelta degli strumenti di test/build/continuous integration)\\
 %•	uno studente (ad esempio, chi ha l'idea del progetto) fungerà da product owner, oltre che da sviluppatore\\
 %•	in un meeting iniziale si rediga un product backlog, e si definisca un primo sprint organizzativo (preparazione della build, identificazione requisiti base e architettura)\\
 %•	si definiscano via-via delle sprint da 25-30 ore di lavoro (una settimana full-time), in modo da realizzarne 3-4 in tutto\\
 %•	si cerchi ad ogni sprint di ottenere risultati "tangibili", con già un valore per gli stakeholder (i docenti)\\
 %•	si tenga anche uno sprint backlog, e si facciano meeting frequenti, e meeting a inizio/fine sprint (con brevissimo report del risultato, anch'esso da tenere in versione)\\
-
 %*) Le scelte tecnologiche non dovrebbero essere anticipate troppo per ovvi motivi.. prima le fate prima impattano tutta la parte successiva e quindi diventano più difficilmente riconsiderabili (comunque in linea di principio ogni scelta potrebbero stare ovunque, dai requirement fino all'implementazione) \\
-
-
 
 \section{Development methodology}
 
@@ -63,8 +61,6 @@ Each civil protection manages a single district, but each rescue team can join d
 %Per ciò che riguarda gli strumenti di Build è stato fatto un estensivo uso di Gradle, in maniera tale che risultasse più pratico utilizzare anche librerie Java all’interno del sistema.
 
 %Inoltre, si è scelto di utilizzare la libreria ScalaTest come strumento per svolgere i test. Essi ricoprono quasi totalmente la parte di model e di controller del codice Client e possono essere visionati nel package src/test. Invece, per quanto concerne il sistema ad attori, presente sia nel codice Client che in quello Server, non vi sono test ma, si è comunque verificata la corretta interazione tra le parti simulando lo scambio di messaggi tra di esse e verificando, in ultimo, l’esattezza del contenuto del messaggio ricevuto
-
-
 
 To manage product development we were inspired by Scrum framework, an iterative and incremental agile software development methodology.
 According to Scrum method we decided to have face-to-face meeting as often as possible and when not possible due to personal commitments we planned meeting via VoIP.
@@ -303,8 +299,8 @@ This is used when a civil protection notice all the other civil protecions about
 
 \chapter{Detail design}
 %TODO
-(pattern di progettazione, organizzazione del codice -- corredato da pochi ma efficaci diagrammi)\\
-*) Il design di dettaglio "esplode" (dettaglia) l'architettura, ma viene concettualmente prima dell'implementazione, quindi non metteteci diagrammi ultra-dettagliati estratti dal codice, quelli vanno nella parte di implementazione
+%(pattern di progettazione, organizzazione del codice -- corredato da pochi ma efficaci diagrammi)\\
+%Il design di dettaglio "esplode" (dettaglia) l'architettura, ma viene concettualmente prima dell'implementazione, quindi non metteteci diagrammi ultra-dettagliati estratti dal codice, quelli vanno nella parte di implementazione
 
 \section{Graphical User Interface Design}
 
@@ -320,7 +316,7 @@ The first main screen is designed to allow a user to login with his credentials 
 
 The second main screen allows a logged user to reach the screens to see all the last alarms in the district where the user is, to send a new alarm and to see and manage his profile.
 
-\begin{figure}[ht]
+\begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{figures/mockupMobile.png}
 \caption{Mobile user application mockups}
@@ -343,7 +339,7 @@ Still from the home view, civil protection users can select an alert and by clic
 
 To manage rescues in order to stop a rescue if necessary, civil protection users can click on the ``\textit{Manage rescues}'' button, which shows a screen where there's only the possibilty to stop the rescue team.
 
-\begin{figure}[ht]
+\begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{figures/CPmockup.png}
 \caption{Civil protection mockups}
@@ -351,30 +347,57 @@ To manage rescues in order to stop a rescue if necessary, civil protection users
 \end{figure}
 
 \section{Code organization}
-The code is contained within the same project organized in modules.
+The code is contained within the same project organized in modules:
 \begin{itemize}
-\item \textbf{civilprotection} module contains the civil protection application, which is organized according to the MVC pattern. 
-\item \textbf{mobileuser} module contains the Android application 
-\item \textbf{server} %contiene il codice dei servizi del server
-\item \textbf{utils} module %TODO contiene il codice per eseguire le operazioni di geocoding e geodecoding ed i messaggi che le protezioni civili possono scambiare con il server 
-\item \textbf{utils-java} module %contiene solo codice java, condiviso con gli altri moduli tra cui il model dell'interno progetto, le classi base per gestire la connessione con il RabbitMQ broker, la classe per serializzare e deserializzare i messaggi e le classi base per i messaggi ed i messaggi che l'applicazione mobile può scambiare con il server
+\item \textbf{civilprotection} contains the civil protection application, which is organized according to the MVC pattern. 
+\item \textbf{mobileuser} contains the Android application 
+\item \textbf{server} contains the classes related to server services and database.
+\item \textbf{utils} contains the classes related to geocoding and geodeconding operations as well as the messages exchanged between server and civil protections; this module is imported by the civil protection and server one. 
+\item \textbf{utils-java} contains only Java code and it is imported by all the other modules.
+Contains 
+\begin{itemize}
+\item the model of the entire project
+\item the classes used to manage the connection to RabbitMQ broker
+\item some utilities classes
+\item the template classes to build messages as well as the class to serialize and deserialize them using Gson library
+\item the messages exchanged between mobile application and server
+\end{itemize}
 \end{itemize}
 
-\section{Server-DB}
-AWS: deciso in remoto per evitare di avere copie duplicate e necessità di ricreare DB e server
+Some package names are repeated within the various modules and contain classes that have the same usefulness. The most used are
+\begin{itemize}
+\item package \texttt{connection} which contains the classes that deals with the connection to the RabbitMQ broker
+\item package \texttt{communication} which contains the classes that deals with messages exchanged among the system components
+\end{itemize}
 
-MySQL: deciso per compatibilità con le varie componenti utilizzate (più conosciuto/più documentazione), gratuito.
-Indecise con no sql poi scelto mysql perché db parecchio grande e per avere sicurezze di non incorrere in spese.
+\section{Server and Database}
+It was decided to use a remote server and a remote database, both hosted by Amazon AWS, to have instances always available and accessible from everyone as the system it was designed to be of public utility.
+
+More specifically the remote server is running on an EC2 instance (t2.micro) where a service always keeps it alive. The remote database is hosted on an RDS instance, accessed only from the server instance. It was decided to use MySQL because of previous knowledge of the relational model.
 
 \section{Patterns}
 \begin{itemize}
-\item Builder: the builder pattern was used for model classes and those of messages that had more than 2-3 arguments at constructor.
-\item Template Method: the template method pattern was used in handling server response in case of RPC and to group similar objects with common methods in accessing database.
-\item Singleton: utilizzato per il coordinator %TODO
-\item View-Holder: the view-holder pattern was used into Android adapter to store each of the component views inside the tag field of the Layout in order to access them without the need to look them up repeatedly. %TODO check!!!
-\item Static factory: the static factory pattern has been used to create database connection. %TODO check
-\item Factory pattern: the factory pattern has been used to retrieve the DAOs of database tables. %TODO check
-\item Observer: used to manage the view update as a result of model changes. %TODO mettere una lista di observer observable?
+\item \textbf{Builder}: the builder pattern was used for model classes and those of messages that had more than 2-3 arguments at constructor.
+\item \textbf{Template Method}: the template method pattern was used in handling server response in case of RPC and to group similar objects with common methods in accessing database.
+\item \textbf{Singleton}: the singleton pattern was user for the Coordinator implementation to keep the process status in relation to the critical section in Ricart-Agrawala algorithm.
+\item \textbf{View-Holder}: the view-holder pattern was used into Android adapter to store each of the component views inside the tag field of the Layout in order to access them without the need to look them up repeatedly.
+\item \textbf{Adapter}: the adapter pattern was used as a bridge between a view and the underlying data for that view; it provides access to the data items and it is also responsible for making a view for each item in the data set.
+\item \textbf{Static factory}: the static factory pattern was used to create database connection.
+\item \textbf{Factory pattern}: the factory pattern was used to retrieve the DAOs of database tables.
+\item \textbf{Observer}: the observer pattern was used to manage the view update as a result of model changes.
+
+\begin{center}
+\begin{tabular}{ |c|c| } 
+\hline
+Observer 			& Observable \\
+\hline
+GpsListener 		& GPS \\
+%TODO GpsListener 		& GPS \\
+%TODO GpsListener 		& GPS \\
+\hline
+\end{tabular}
+\end{center}
+
 \end{itemize}
 
 \section{Communication messages}
@@ -401,8 +424,8 @@ Login 				& LoginMessage(email, password) 	& ResponseLoginMessage (UserImpl,List
 Request profile 	& RequestProfileMessage (email)		& ProfileMessage(User Impl)	& RPC	\\ 
 Change password		& ChangePasswordMess age(email,oldPassword, newPassword)	& SuccessfulMessage	& RPC	\\
 Get alerts		& RequestAlertsMessage (latitude,longitude)	& AlertsMessage(List $<$AlertsImpl$>$)	& RPC	\\
-New alert		& NewAlertMessage(user ID,eventType,latitude, longitude)	& no response but ForwardObjectMessage (List$<$String$>$,Object Model)	& p/s	\\
-Upvote alert		& RequestUpvoteAlert Message(userID, alertID)	& no response but ForwardObjectMessage (List$<$String$>$,Object Model)	& p/s	\\
+New alert		& NewAlertMessage(user ID,eventType,latitude, longitude)	& no response but ForwardObjectMessage (List$<$String$>$,Object Model)	& forward	\\
+Upvote alert		& RequestUpvoteAlert Message(userID, alertID)	& no response but ForwardObjectMessage (List$<$String$>$,Object Model)	& forward	\\
 \hline
 \end{tabular}
 \end{center}
