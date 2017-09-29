@@ -614,9 +614,10 @@ All the code referred into this section is located into module \texttt{server/sc
 In order to handle the sending of a response and the forward of a message server side, \texttt{ServiceResponse} and \texttt{ServiceForward} traits were created in package \texttt{connection}. These traits extend \texttt{ServiceOperation} overriding and implementing in different ways \textit{handleDBresult}. 
 
 Services that can handle both response and forward extends \texttt{ServiceResponseOr\\Forward} trait which extends both \texttt{ServiceResponse} and \texttt{ServiceForward}. This was possibile because Scala allows implementing functions in traits and multiple inheritance on traits. Basing on the content of the \textit{properties} parameter that came together with the message through RabbitMQ, it is discriminated if the message has to be forwarded or needs a reply and the appropriate \textit{super} method is called.
-\\More specifically if the \textit{properties.getReplyTo} content is a valid string, then it represents the name of the queue to which send the response message returned from \textit{accessDB} method. Otherwise the result of the \textit{accessDB} method is a \texttt{ForwardObjectMessage} containing the ObjectModel to forward and the queues name to which forward it.
-\\This behaviour has been tested using ScalaTest inside \texttt{TestClientServerCommunication} class in \texttt{test} folder of package \texttt{connection}.
-\\
+
+More specifically if the \textit{properties.getReplyTo} content is a valid string, then it represents the name of the queue to which send the response message returned from \textit{accessDB} method. Otherwise the result of the \textit{accessDB} method is a \texttt{ForwardObjectMessage} containing the ObjectModel to forward and the queues name to which forward it.
+
+This behaviour has been tested using ScalaTest inside \texttt{TestClientServerCommunication} class in \texttt{test} folder of package \texttt{connection}.
 
 \subsubsection{AlertsService}
 Case class \texttt{AlertsService} in package \texttt{connection} extends \texttt{ServiceResponseOrForward} and manages messages requests related to alerts both from mobileuser and civil protection. More specifically these messages are shown in the detail design section.
@@ -719,7 +720,7 @@ The grids' container class (\texttt{MainView}) has the reference of each control
 Some buttons have been inserted to move among views. Every button has been provided of a mouse event able to catch the mouse click. So relative controller methods are called and all relative actions are performed in order to switch to the right view.
 
 Part of the individual contribution was then oriented to implement two scala classes that belong to the civil protection local model.
-The \texttt{AlertEntry} and \texttt{EnrolledTeamInfo} classes have been created to simplify insertion and values retrieval from the \textit{TableView} elements contained in the relative views. An \texttt{AlertEntry} element represents a table entry of the \texttt{HomeGrid}, because it's necessary to show the alert ID, the timestamp, latitude and longitude, the user and the district ID, the event name and the upvotes with a table representation. Similarly, the an \texttt{EnrollTeamInfo} element represents a table entry of the \texttt{ManageRescuesGrid}, because in this case it's necessary to show the team ID, name and phone number, if the team is available or not, the ID of the civil protection which occupied the team and the ID of the alert for which the team has been sent.
+The \texttt{AlertEntry} and \texttt{EnrolledTeamInfo} classes have been created to simplify insertion and values retrieval from the \textit{TableView} elements contained in the relative views. An \texttt{AlertEntry} element represents a table entry of the \texttt{HomeGrid}, because it's necessary to show the alert ID, the timestamp, latitude and longitude, the user and the district ID, the event name and the upvotes with a table representation. Similarly, an \texttt{EnrollTeamInfo} element represents a table entry of the \texttt{ManageRescuesGrid}, because in this case it's necessary to show the team ID, name and phone number, if the team is available or not, the ID of the civil protection which occupied the team and the ID of the alert for which the team has been sent.
 
 These two classes are also used in the \texttt{CivilProtectionData} class, which represents the model that every civil protection needs to mantain locally in order to get last alerts list and to manage rescue teams.
 
@@ -741,7 +742,7 @@ Code has been organized as \texttt{civilprotection/src/main/scala/it/unibo/dresc
 \item \texttt{localModel} package: contains classes relative to the logged civil protection local model. Generic model classes (which must be used from other modules too) can be found under \texttt{utils-java/src/main/java/it/unibo/drescue/model} package.
 \end{itemize} 
 
-Package localModel contains CivilProtectionData class, which represents the main local model to handle in each civil protection.
+Package \texttt{localModel} contains CivilProtectionData class, which represents the main local model to handle in each civil protection.
 
 
 \subsubsection{Handle model in civil protection module using pattern Observer}
@@ -750,7 +751,7 @@ The views' real-time update has been set up with Observer pattern. Each model ch
 
 Observer pattern has been organized as following: the Observer trait is included in \texttt{civilprotection/src/main/scala/it/unibo/drescue/controller} package, as three minor controllers must implement it. This trait contains a \textit{onReceivingNotification()} method each observer class must implement in order to react to a notification.
 
-In the same way, \texttt{civilprotection/src/main/scala/it/unibo/drescue/localModel} package contains the Observable trait, which is implemented by the CivilProtectionData class in order to notify a change. This trait has an object \textit{Observers} that represent an enumeration with which the right observer is notified. The \texttt{addObserver()} method is used to associate an observer to an observable object, while the \textit{notifyObserver()} method is used to notify the right observer through the enumeration.
+In the same way, \texttt{civilprotection/src/main/scala/it/unibo/drescue/localModel} package contains the Observable trait, which is implemented by the CivilProtectionData class in order to notify a change. This trait has an object \textit{Observers} that represent an enumeration with which the right observer is notified. The \textit{addObserver()} method is used to associate an observer to an observable object, while the \textit{notifyObserver()} method is used to notify the right observer through the enumeration.
 
 \subsubsection{Handle communication from civil protection to server}
 
@@ -758,17 +759,17 @@ Client-server communication for the civil protection side has been mainly handle
 
 \begin{itemize}
 \item \texttt{RequestHandler.scala}, which starts a future that returns a result. The future result is the response which has to be understood from the controller as it is a message encoded with the JSON format.
-\item \texttt{AlertConsumer}, which is a RabbitMQ consumer that is waiting for the reception of messages like ForwardAlertMessage and ForwardUpvotedAlertMessage; when received, this consumer arranges for the model update.
+\item \texttt{AlertConsumer.scala}, which is a RabbitMQ consumer that is waiting for the reception of messages like ForwardAlertMessage and ForwardUpvotedAlertMessage; when received, this consumer arranges for the model update.
 \end{itemize}
 
 \subsection{Samantha Bandini - Elisa Casadio - Anna Giulia Leoni}
 \subsubsection{Handle DB layer exeptions}
-It was decided to handle database exception because to different exceptions corresponds different actions server side. All the database exceptions can be found in package \texttt{database/\\exceptions} of module \texttt{server/java}. More specifically
+It was decided to handle database exception because to different exceptions correspond different actions server side. All the database exceptions can be found in package \texttt{database/\\exceptions} of module \texttt{server/java}. More specifically
 \begin{itemize}
-\item a \texttt{DBConnectionException} is thrown if an error occurr while establishing or closing connection to database, or when asking to access a non-existing table.
-\item a \texttt{DBQueryException} is thrown if an error occurr while executing a query.
-\item a \texttt{DBDuplicatedRecordException} is thrown while inserting an object into database, when an equal object (with the same identifier) was found in database.
-\item a \texttt{DBNotFoundRecordException} is thrown while searching an object into db, when an equal object (with the same identifier) was not found in database.
+\item a \texttt{DBConnectionException} is thrown if an error occurs while establishing or closing connection to database, or when asking to access a non-existing table.
+\item a \texttt{DBQueryException} is thrown if an error occurs while executing a query.
+\item a \texttt{DBDuplicatedRecordException} is thrown while inserting an object into database, when an equal object (with the same identifier) is found in database.
+\item a \texttt{DBNotFoundRecordException} is thrown while searching an object into db, when an equal object (with the same identifier) is not found in database.
 \end{itemize}
 Sometimes when the last two occur, the error is notified to the client, otherwise it is only logged.
 
@@ -779,33 +780,36 @@ The code executed on server is located inside the \texttt{connection} package in
 \begin{itemize}
 \item \texttt{ServerMain} represents the main class of the module, contains the code to setup the connection to RabbitMQ broker and runs all the services.
 \item \texttt{Service} is a case class that represents a generic service. A new channel is created on the given connection and a new \texttt{ServerConsumer} is added to the channel to consume on the given queue.
-\item \texttt{ServerConsumer} is a simple server-side consumer extending the default RabbitMQ consumer and overriding the \emph{handleDelivery} method called when consuming a message. Furthermore, a class implementing \texttt{ServerOperation} trait must be passed to the consumer in order to access database and handle potentially the returning result. In case of \emph{accessDB} method throw an exception, the error is logged, otherwise the result is handled. 
-\item \texttt{ServiceOperation} is a trait modelling a general service to access database and handle the result. This trait is implemented by all classes that represent the specific services. The \emph{accessDB} method is where concreate access to database is using the Data Access Object.
+\item \texttt{ServerConsumer} is a simple server-side consumer extending the default RabbitMQ consumer and overriding the \emph{handleDelivery} method called when consuming a message. Furthermore, a class implementing \texttt{ServerOperation} trait must be passed to the consumer in order to access database and potentially handle the returning result. In case of \emph{accessDB} method throws an exception, the error is logged, otherwise the result is handled. 
+\item \texttt{ServiceOperation} is a trait modelling a general service to access database and handle the result. This trait is implemented by all classes that represent the specific services. The \emph{accessDB} method is where concrete access to database uses the Data Access Object.
 \end{itemize}
 
 \subsubsection{Server configuration}
 Anna Giulia following AWS Guidelines setup a preconfigured instance with RabbitMQ called \emph{Bitnami}.
 
-Elisa, however, configured the instance Linux machine. First, the Java 8 JDK and Scala 2.12.2 are installed to can run the application. A service is created so that the server application can always be active on the machine. The \texttt{drescue-server.sh} bash file, containing the script to create, start and stop the service on the machine, is added to \texttt{/etc/init.d/} folder. Inside the script, there is the command to execute the application jar.
+Elisa, however, configured the instance Linux machine. First, the Java 8 JDK and Scala 2.12.2 have been installed to run the application. A service is created so that the server application can always be active on the machine. The \texttt{drescue-server.sh} bash file, containing the script to create, start and stop the service on the machine, is added to \texttt{/etc/init.d/} folder. Inside the script, there is the command to execute the application jar.
 
 \subsection{Martina Giovanelli - Anna Giulia Leoni}
 
 \subsubsection{Setup the connection}
 The package \texttt{connection} inside \texttt{utils-java} module contains the classes used to setup the communication through rabbitMQ used in every other module that needs to communicate with the server or other clients.
-\\\texttt{RabbitMQConnectionImpl} class implements \texttt{RabbitMQConnection} interface and contains methods to setup, close and get the real TCP connection with the RabbitMQ broker by setting the host address, port, username and password. 
-\\\texttt{RabbitMQImpl} class implements \texttt{RabbitMQ} interface and contains methods to setup, get and performs other operations related to the virtual connection (\textit{channel}) created on the TCP one like sending a message or adding a new consumer on the channel consuming on a specific queue.
+
+\texttt{RabbitMQConnectionImpl} class implements \texttt{RabbitMQConnection} interface and contains methods to setup, close and get the real TCP connection with the RabbitMQ broker by setting the host address, port, username and password. 
+
+\texttt{RabbitMQImpl} class implements \texttt{RabbitMQ} interface and contains methods to setup, get and perform other operations related to the virtual connection (\textit{channel}) created on the TCP one like sending a message or adding a new consumer on the channel consuming on a specific queue.
 
 \subsubsection{Message structure definition}
 The package \texttt{communication/messages} inside \texttt{utils-java} module contains the template classes representing the messages exchanged within the entire system.
-More specifically two type of messages have been created:
+More specifically two types of messages have been created:
 \begin{itemize}
-\item \texttt{AbstractMessage} implementing \texttt{Message} interface which represents the message to be exchanged in client-server and server-client communication. 
-\item \texttt{AbstractRoutingMessage} implementing \texttt{RoutingMessage} interface which represents the message to be exchanged in peer-to-peer communication to address the message to the right civil protections. 
+\item \texttt{AbstractMessage} implementing \texttt{Message} interface, which represents the message to be exchanged in client-server and server-client communication. 
+\item \texttt{AbstractRoutingMessage} implementing \texttt{RoutingMessage} interface, which represents the message to be exchanged in peer-to-peer communication to address the message to the right civil protections. 
 \end{itemize}
 This hierarchy is shown in the Detail Design section.
 
-All the system components communicate through messages exchanged in JSON format. The chosen library for this aim is \textit{Gson}. \\
-\texttt{GsonUtils} class is a simple wrapper of Gson that contains the method \textit{toGson} to serialize a generic Message into its equivalent JSON representation and the method \textit{fromGson} to deserialize the JSON String passed into a Message of the specified class.
+All the system components communicate through messages exchanged in JSON format. The chosen library for this aim is \textit{Gson}. 
+
+\texttt{GsonUtils} class is a simple wrapper of Gson that contains the method \textit{toGson()} to serialize a generic Message into its equivalent JSON representation and the method \textit{fromGson()} to deserialize the JSON String passed into a Message of the specified class.
 
 \chapter{Retrospective}
 
@@ -847,6 +851,9 @@ We also encountered difficulties in estimating each feature time. This brought t
 Finally, we discovered there is a problem with the RDS instance: sometimes responses are corrupted in spite of correct requests. This brings to the inability of accessing to the database data.
 Development tests have been made with local server and local database, and nothing went wrong.
 
+In civil protection module we encountered some problems only during development ending. We discovered that sometimes the GUI stops responding properly and, due to the RDS instance problem, there is the need of an additional check.
+Moreover, if a civil protection is not logged and an alert (or upvote) is forwarded, the view processes it two times so that in the list there is a duplicated entry. 
+
 \section{Final judgement}
 
 Although anyone had previously worked in a five people group, relationship and communication were good and each member was helpful with each other.
@@ -855,7 +862,7 @@ We are satisfied enough with the project result. In spite of some problems with 
 
 \section{Future developments}
 
-Database and server have been already designed for possible future expansions, like :
+Database and server have been already designed for possible future expansions, like:
 \begin{itemize}
 \item civil protections operating on common districts;
 \item a session and an authentication token;
