@@ -24,7 +24,89 @@
 
 \begin{document}
 
-\maketitle
+%\maketitle
+
+\begin{titlepage} % Suppresses headers and footers on the title page
+
+	\centering % Centre everything on the title page
+	
+	%\scshape % Use small caps for all text on the title page
+	
+	\vspace*{\baselineskip} % White space at the top of the page
+	
+	{\LARGE Università di Bologna, Sede di Cesena \\ Ingegneria e Scienze Informatiche LM} % Publisher
+	
+	\vspace{4\baselineskip}	
+	
+	%------------------------------------------------
+	%	Title
+	%------------------------------------------------
+	
+	\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} % Thick horizontal rule
+	\rule{\textwidth}{0.4pt} % Thin horizontal rule
+	
+	\vspace{0.90\baselineskip} % Whitespace above the title
+	
+	{\Huge  D-RESCUE}
+	
+	\vspace{0.40\baselineskip} 
+	
+	{\huge  Natural Disaster Alert and Rescue} % Title
+	
+	\vspace{0.30\baselineskip} % Whitespace below the title
+	
+	\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt} % Thin horizontal rule
+ 	\rule{\textwidth}{1.6pt} % Thick horizontal rule
+	
+	\vspace{3\baselineskip} % Whitespace after the title block
+	
+	%------------------------------------------------
+	%	Subtitle
+	%------------------------------------------------	
+	
+	{\scshape \Large Exam: Sviluppo di Sistemi Software}
+	
+	\vspace*{4\baselineskip} % Whitespace under the subtitle
+	
+	%------------------------------------------------
+	%	Editor(s)
+	%------------------------------------------------
+	
+	\large Edited By
+	
+	\vspace{1.9\baselineskip} % Whitespace before the editors
+		
+	\begin{tabular}{ r c l } 
+\Large Samantha Bandini &   & \Large samantha.bandini3@studio.unibo.it \\
+\\
+\Large Elisa Casadio &   & \Large elisa.casadio7@studio.unibo.it \\
+\\
+\Large Martina Giovanelli &   & \Large martina.giovanelli@studio.unibo.it \\
+\\
+\Large Anna Giulia Leoni &   & \Large annagiulia.leoni@studio.unibo.it \\
+\\
+\Large Sofia Rosetti &   & \Large sofia.rosetti@studio.unibo.it
+\end{tabular}
+	
+	\vspace{0.5\baselineskip} % Whitespace below the editor list
+	
+	%TODO
+%	\textit{PPS Project} % Editor affiliation
+	
+	\vfill % Whitespace between editor names and publisher logo
+	
+	%------------------------------------------------
+	%	Publisher
+	%------------------------------------------------
+	
+	\vspace{0.3\baselineskip} % Whitespace under the publisher logo
+	
+	29/09/2017 % Publication year
+	
+	Repo: https://github.com/SofiaRosetti/S3-16-d-rescue % Subtitle or further description
+
+\end{titlepage}
+
 
 \tableofcontents
 
@@ -372,7 +454,7 @@ The tables below shows the messages that are exchanged using point-to-point comm
 Mobile user - server communication:
 
 \begin{center}
-\begin{tabular}{ |p{4cm}|p{4cm}|p{4cm}|p{2cm}| } 
+\begin{tabular}{ |p{3.5cm}|p{4.6cm}|p{4.6cm}|p{1.3cm}| } 
 \hline
 Service 			& Request message 	& Response message		& Type 	\\
 \hline
@@ -390,7 +472,7 @@ Upvote alert		& RequestUpvoteAlert Message(userID, alertID)	& no response but Fo
 Civil protection - server communication:
 
 \begin{center}
-\begin{tabular}{ |p{4cm}|p{4cm}|p{4cm}|p{2cm}| } 
+\begin{tabular}{ |p{3.5cm}|p{4.6cm}|p{4.6cm}|p{1.3cm}| } 
 \hline
 Service 			& Request message 	& Response message		& Type 	\\
 \hline
@@ -425,7 +507,7 @@ The table below shows the messages that are exchanged using publish/subscribe co
 Civil protection - Civil protection communication:
 
 \begin{center}
-\begin{tabular}{ |p{4cm}|p{4cm}|p{4cm}|p{2cm}| } \hline
+\begin{tabular}{ |p{3.5cm}|p{4.6cm}|p{4.6cm}|p{1.3cm}| } \hline
 Service 			& Request message 	& Response message		& Type 	\\
 \hline
 Get Rescue Team Condition	& ReqRescueTeam ConditionMessage(RescueTeamID)	& ReplyRescueTeam ConditionMessage(RescueTeamID, RescueTeamCondition) 	& p/s	\\ 
