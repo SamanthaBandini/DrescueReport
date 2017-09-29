@@ -614,14 +614,14 @@ All the code referred into this section is located into module \texttt{server/sc
 In order to handle the sending of a response and the forward of a message server side, \texttt{ServiceResponse} and \texttt{ServiceForward} traits were created in package \texttt{connection}. These traits extend \texttt{ServiceOperation} overriding and implementing in different ways \textit{handleDBresult}. 
 
 Services that can handle both response and forward extends \texttt{ServiceResponseOr\\Forward} trait which extends both \texttt{ServiceResponse} and \texttt{ServiceForward}. This was possibile because Scala allows implementing functions in traits and multiple inheritance on traits. Basing on the content of the \textit{properties} parameter that came together with the message through RabbitMQ, it is discriminated if the message has to be forwarded or needs a reply and the appropriate \textit{super} method is called.
-\\More specifically if the \textit{properties.getReplyTo} content is a valid string then represents the name of the queue to which send the response message returned from \textit{accessDB} method. Otherwise the result of the \textit{accessDB} method is a \texttt{FrowardObjectMessage} containing the ObjectModel to forward and the queues name to which forward it.
-\\This behaviour is tested using ScalaTest inside \texttt{TestClientServerCommunication} class in \texttt{test} folder of package \texttt{connection}.
+\\More specifically if the \textit{properties.getReplyTo} content is a valid string, then it represents the name of the queue to which send the response message returned from \textit{accessDB} method. Otherwise the result of the \textit{accessDB} method is a \texttt{ForwardObjectMessage} containing the ObjectModel to forward and the queues name to which forward it.
+\\This behaviour has been tested using ScalaTest inside \texttt{TestClientServerCommunication} class in \texttt{test} folder of package \texttt{connection}.
 \\
 
 \subsubsection{AlertsService}
 Case class \texttt{AlertsService} in package \texttt{connection} extends \texttt{ServiceResponseOrForward} and manages messages requests related to alerts both from mobileuser and civil protection. More specifically these messages are shown in the detail design section.
 
-In handling new alerts and upvotes messages is also necessary to retrieve the civil protections related to the zone from which the alert was sent to forward the alert or the upvote to the rights civil protections. Furthermore in handling new alerts and requests of alerts from mobile, methods of the Geocoding class were used to calculate the district to which register the new alert or to which get the alerts.
+In handling new alerts and upvotes messages is also necessary to retrieve the civil protections related to the zone from which the alert has been sent, in order to forward the alert or the upvote to the rights civil protections. Furthermore in handling new alerts and requests of alerts from mobile, methods of the Geocoding class were used to calculate the district to which register the new alert or from which get the alerts.
 
 \subsection{Android application}
 
@@ -635,7 +635,7 @@ Activities have been implemented with the related layouts to allow the user to s
 \item \texttt{SplashActivity} represents the splash screen of the app where the user can select to sign up or login
 \item \texttt{SignUpActivity} and \texttt{LoginActivity} in package \texttt{authentication} represent respectivly the activity that contains the fields that the user must fill to sign up and login. Some checks are made on the validity of the email address and the match between password and confirm password at sign up.
 \item \texttt{UpvoteAlertActivity} in package \texttt{alert} represents the activity that contains a list of existing alerts that the user can upvote to increase their reliability. It extends \texttt{GpsActivityImpl} because latitude and longitude of the user are needed to correctly download alerts of its district. \\
-The alert list is presented within the app using Adapter and ListView. The \texttt{Alert Adapter} allows access to data and creates the corresponding view based on the layout provided for each alert of the given list. Inside the Adapter the ViewHolder pattern has been used to limit the number of calls to \textit{findViewbyId} method. This ways, this methods is invoked once for each item of the list passed at constructor and references to layout elements are stored in an \texttt{AlertViewHolder} instance associated with convertView with \textit{View.setTag} to be used for next items.
+The alert list is presented within the app using Adapter and ListView. The \texttt{Alert Adapter} allows access to data and creates the corresponding view based on the layout provided for each alert of the given list. Inside the Adapter the ViewHolder pattern has been used to limit the number of calls to \textit{findViewbyId} method. This ways, this method is invoked once for each item of the list passed at constructor and references to layout elements are stored in an \texttt{AlertViewHolder} instance associated with convertView with \textit{View.setTag} to be used for next items.
 \end{itemize}
 
 \subsubsection{Connection to server}
@@ -644,13 +644,13 @@ The package \texttt{connection} contains the classes used to communicate to the 
 
 More specifically two AsynkTask were created:
 \begin{itemize}
- \item \texttt{RabbitAsyncTask} to perform RPC, returning a String result that represents the server response in json format. If the communication timeout is reached or in case of exception during the communication the result consists of an error. The received result is passed to an handler, represented by a class implementing the \texttt{RequestDelegate} interface, in our case \texttt{AbstractResponse} class, which deserializes it basing on message type and addresses it to the abstract methods \textit{onSuccessfulRequest} or \textit{onErrorRequest} implemented for each request to perform specific operations basing on it.
+ \item \texttt{RabbitAsyncTask} to perform RPC, returning a String result that represents the server response in JSON format. If the communication timeout is reached or in case of exception during the communication the result consists of an error. The received result is passed to an handler, represented by a class implementing the \texttt{RequestDelegate} interface, in our case \texttt{AbstractResponse} class, which deserializes it basing on message type and addresses it to the abstract methods \textit{onSuccessfulRequest} or \textit{onErrorRequest} implemented for each request to perform specific operations basing on it.
  \item \texttt{RabbitPublishAsyncTask} to send messages using the publish/subscribe paradigm, returning a boolean result that represents the sending outcome. The result is passed to an handler, represented by a class implementing the \texttt{PublisherDelegate} interface, which performs different operations basing on it.
 \end{itemize}
-The connection to the server was added into the activities of package \texttt{alert} using the above classes. Before sending the message to the server it is always checked that the device is connected to the netword and, if needed, if latitude and longitude values are correct. More specifically
+The connection to the server was added into the activities of package \texttt{alert} using the above classes. Before sending the message to the server it is always checked that the device is connected to the network and, if needed, if latitude and longitude values are correct. More specifically
 \begin{itemize}
  \item in \texttt{NewAlertActivity} a \texttt{NewAlertMessage} containing the alert data is created, sent and the result of the sending is shown to the user.
- \item in \texttt{UpvoteAlertActivity} a \texttt{RequestUpvoteAlertMessage} containing the upvote data is created, sent and the result is shows as above; a \texttt{RequestAlertsMessage} containing user position is sent through RPC and on receiving the alert list of his district the adapter must be notified. If timeout is reached or an error occurr an error message is shown. 
+ \item in \texttt{UpvoteAlertActivity} a \texttt{RequestUpvoteAlertMessage} containing the upvote data is created, sent and the result is shows as above; a \texttt{RequestAlertsMessage} containing user position is sent through RPC and on receiving the alert list of his district the adapter must be notified. If timeout is reached or an error occurs an error message is shown. 
 \end{itemize}
 
 \subsection{Civil Protection application}
@@ -658,7 +658,7 @@ The connection to the server was added into the activities of package \texttt{al
 All the code referred into this section is located into module \texttt{civilprotection}.
 
 The developed part is strictly connected to request and response messages exchanged between civil protections in order to obtain information about the condition of their rescue teams.
-\\These messages are \texttt{ReqRescueTeamConditionMessage} and \texttt{ReplyRescueTeamCondition\\Message}; their reception is handled inside \texttt{RescueTeamConsumer}. More specifically on receiving the first message the civil protection reply with the second one, setting as condition the one stored in \textit{EnrolledTeamInfo} local model for the specific rescue team; on receiving the second one the civil protection update its local model with the condition received.
+\\These messages are \texttt{ReqRescueTeamConditionMessage} and \texttt{ReplyRescueTeamCondition\\Message}; their reception is handled inside \texttt{RescueTeamConsumer}. More specifically on receiving the first message the civil protection replies with the second one, setting as condition the one stored in \textit{EnrolledTeamInfo} local model for the specific rescue team; on receiving the second one the civil protection updates its local model with the condition received.
 A message to request enrolled rescue teams conditions is also sent at login and on enrolling a new team.
 
 \section{Sofia Rosetti}
@@ -823,11 +823,13 @@ We set up all development environments, including the repository and the automat
 According to the requirements, we decided fundamental system parts to start with and other parts' priority.
 
 We initially wanted to use a Platform-As-A-Service system regardless of the underlying infrastructure, in order to take advantage of the existing APIs. Because of this, we spent some time trying to learn the best way to use the Google App Engine platform.
-Unfortunately, we encountered some problems. 
+%Unfortunately, we encountered some problems. 
 %TODO
 %Queste 2 righe sotto le metterei nella Sprint 1 retrospective e sopra scriverei "abbiamo incontrato qualche problema, come si può vedere nel file 'Sprint retrospectives' in the paragraph related to Sprint 1".
 
 %In Italy there is only the possibility to register a commercial account and not a private account. Moreover, the Flexible Environment we needed had only a Beta version of Java 8 and no Scala support.
+
+As explained in ``Sprint retrospectives'' file, in the paragraph related to Sprint 1, we encountered some problems.
 
 For these reasons, we decided to switch on Amazon Web Services, which is an Infra-\\structure-As-A-Service. We set up two AWS instances, one for computation (\textit{Amazon Elastic Compute Cloud}) and one for the database (\textit{Amazon Relational Database Service}).
 
