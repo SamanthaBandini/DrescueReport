@@ -558,7 +558,7 @@ This service is tested with \texttt{scalatest} in class \texttt{MobileuserServic
 \section{Martina Giovanelli}
 In the DRescue project, Martina Giovanelli contribution was mainly related to design and implementation of communication between civil protections by way of the exchange of JSON messages and the management of rescue teams.
 \subsection{Communication between civil protections}
-Every civil protection maintain the condition of the rescue teams it has enrolled in in his local memory. 
+Every civil protection maintain the condition of the rescue teams it has enrolled in his local memory. 
 When the civil protection receives a new alert it must communicate with other civil protections in order to decide which rescue team send to solve the occured natural disaster reported by the users.\\
 The rescue teams are shared among the different civil protections so, before select one, they must coordinate with others to recover the picked team status and update their local model.\\
 The messages \texttt{ReplyRescueTeamConditionMessage} and\\ \texttt{ReqRescueTeamConditionMessage} inside \texttt{civilprotection} module are exchanged between the different civil protection respectively to request and send the condition of a particular rescue team.\\
@@ -590,11 +590,11 @@ In particular, this class keeps the process status in relation to the critical s
 The condition of the coordinator is equal to \texttt{wanted} when the civil protection wants to enter into critical section and to update the status of one of its rescue team. 
 In this case the coordinator also maintains the timestamp of the request, the list ID of the civil protection from which the process expects n replay message and the critical section's name which corresponds exactly to the name of the rescue team.
 
-The coordinator's condition is equal to \texttt{held} when the process is into critical section and \texttt{detached} when the civil protection isn't interested to occupied one team.
+The coordinator's condition is equal to \texttt{held} when the process is into critical section and \texttt{detached} when the civil protection isn't interested to occupy one team.
 The coordinator keeps the civil protection's condition for only one critical section.\\
 
 \subsection{Rescues management}
-Individual contribution in civil protection Model-View-Controller was mainly concerned the management of the rescue team into \texttt{ManageRescuesControllerImpl} class and the handle of the  messages received from other civil protection.
+Individual contribution in civil protection Model-View-Controller was mainly related to the management of the rescue team into \texttt{ManageRescuesControllerImpl} class and the handle of the  messages received from other civil protection.
 
 When the civil protection wants to occupy a rescue team it sends a broadcast message to other civil protections that has enrolled in the same rescue team in order to receive their local condition.
 It waits until it receives all the reply messages or receives a reply that informs it that the rescue team is already occupied.
@@ -827,11 +827,6 @@ We set up all development environments, including the repository and the automat
 According to the requirements, we decided fundamental system parts to start with and other parts' priority.
 
 We initially wanted to use a Platform-As-A-Service system regardless of the underlying infrastructure, in order to take advantage of the existing APIs. Because of this, we spent some time trying to learn the best way to use the Google App Engine platform.
-%Unfortunately, we encountered some problems. 
-%TODO
-%Queste 2 righe sotto le metterei nella Sprint 1 retrospective e sopra scriverei "abbiamo incontrato qualche problema, come si può vedere nel file 'Sprint retrospectives' in the paragraph related to Sprint 1".
-
-%In Italy there is only the possibility to register a commercial account and not a private account. Moreover, the Flexible Environment we needed had only a Beta version of Java 8 and no Scala support.
 
 As explained in ``Sprint retrospectives'' file, in the paragraph related to Sprint 1, we encountered some problems.
 
